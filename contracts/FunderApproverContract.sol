@@ -1,9 +1,8 @@
 pragma solidity ^0.8.0;
 
-contract ApproverContract {
-    string approverid;
-    string pondid;
-    string nik;
+contract FunderApproverContract {
+    string funderapproverid;
+    string agentapproverid;
     string approvetimestamp;
     enum Status {
         Draft,
@@ -13,22 +12,22 @@ contract ApproverContract {
     }    
     Status public status;
 
-    struct ApproverTransaction {
-        string from;
-        string to;
+    struct FunderApproverTransaction {
         Status status;
         string filepath;
         string timestamp;
+        uint modalgiven;
+        uint creditscore;
     }
-    ApproverTransaction[] public approvertransactions;
+
+    FunderApproverTransaction[] public funderapprovertransactions;
 
     address public admin;
 
-    constructor(string memory _approverid,string memory _pondid,string memory _nik) {
+    constructor(string memory _funderapproverid,string memory _agentapproverid) {
         admin = msg.sender;
-        approverid = _approverid;
-        pondid = _pondid;
-        nik = _nik;
+        funderapproverid = _funderapproverid;
+        agentapproverid = _agentapproverid;
         resetStatus();
     }
 
@@ -63,19 +62,19 @@ contract ApproverContract {
         approvetimestamp = _timestamp;
     }
 
-    function addApprovalTransaction(string memory _from,string memory _to, Status _status,string memory _filepath, string memory _timestamp) public {
-        approvertransactions.push(
-            ApproverTransaction({
-                from: _from,
-                to: _to,
+    function addFunderApprovalTransaction(Status _status,string memory _filepath, string memory _timestamp, uint256 _modalgiven, uint256 _creditscore) public {
+        funderapprovertransactions.push(
+            FunderApproverTransaction({
                 status: _status,
                 filepath: _filepath,
-                timestamp: _timestamp 
+                timestamp: _timestamp,
+                modalgiven: _modalgiven,
+                creditscore: _creditscore
             })
         );
     }
 
-    function getApprovalTransactions() public view returns (ApproverTransaction[] memory){
-        return approvertransactions;
+    function getFunderApprovalTransactions() public view returns (FunderApproverTransaction[] memory){
+        return funderapprovertransactions;
     }
 }
