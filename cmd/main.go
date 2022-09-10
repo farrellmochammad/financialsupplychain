@@ -91,21 +91,33 @@ func main() {
 		return c.JSON(http.StatusOK, reply)
 	})
 
+	type PayloadModel struct {
+		PrivateKey  string
+		Status      int
+		Filepath    string
+		timestamp   string
+		ModalGiven  int
+		CreditScore int
+	}
+
 	e.POST("/funder", func(c echo.Context) error {
 		//gets address of account by which amount to be deposite
-		var v map[string]interface{}
+
+		var v PayloadModel
 		err := json.NewDecoder(c.Request().Body).Decode(&v)
 		if err != nil {
 			panic(err)
 		}
 
 		//creating auth object for above account
-		auth := getAccountAuth(client, v["accountPrivateKey"].(string))
+		auth := getAccountAuth(client, v.PrivateKey)
 
-		modalgiven, _ := v["modalgiven"].(int)
-		creditscore, _ := v["creditscore"].(int)
+		// modalgiven, _ := v["modalgiven"].(int)
+		// creditscore, _ := v["creditscore"].(int)
 
-		reply, err := connFunderApprover.AddFunderApprovalTransaction(auth, uint8(v["status"].(float64)), v["filepath"].(string), v["timestamp"].(string), big.NewInt(int64(modalgiven)), big.NewInt(int64(creditscore)))
+		// fmt.Println(modalgiven, "-", creditscore)
+
+		reply, err := connFunderApprover.AddFunderApprovalTransaction(auth, uint8(v.Status), v.Filepath, v.timestamp, big.NewInt(int64(v.ModalGiven)), big.NewInt(int64(v.CreditScore)))
 		if err != nil {
 			fmt.Println(err)
 			return err
