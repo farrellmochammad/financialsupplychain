@@ -248,26 +248,6 @@ func main() {
 		return c.JSON(http.StatusOK, reply)
 	})
 
-	e.POST("/spawning", func(c echo.Context) error {
-		//gets address of account by which amount to be deposite
-
-		var v PayloadAgreementModel
-		err := json.NewDecoder(c.Request().Body).Decode(&v)
-		if err != nil {
-			panic(err)
-		}
-
-		//creating auth object for above account
-		auth := getAccountAuth(client, v.PrivateKey)
-
-		reply, err := connAgreement.AddAgreement(auth, v.Timestamp, v.ApproverFunderId, v.MonitoringId, v.ApproverId, v.Signed)
-		if err != nil {
-			fmt.Println(err)
-			return err
-		}
-		return c.JSON(http.StatusOK, reply)
-	})
-
 	e.GET("/status", func(c echo.Context) error {
 		// usecase
 		reply, err := connApprover.GetStatus(&bind.CallOpts{}) // conn call the balance function of deployed smart contract
