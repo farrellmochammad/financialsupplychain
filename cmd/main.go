@@ -4,13 +4,14 @@ import (
 	"context"
 	"crypto/ecdsa"
 	"encoding/json"
-	"financingsupplychain/api"
+	__agreementContract "financingsupplychain/api/agreementcontract"
 	__approverContract "financingsupplychain/api/approvercontract"
 	__funderApproverContract "financingsupplychain/api/funderapprovercontract"
+	__monitoringContract "financingsupplychain/api/monitoringcontract"
+
 	"fmt"
 	"math/big"
 	"net/http"
-	"strconv"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -27,16 +28,7 @@ func main() {
 	}
 
 	// create auth and transaction package for deploying smart contract
-	auth := getAccountAuth(client, "6785defc44895d70c49f1b148d08345f6248124521291c402c9a7d0e41ba8777")
-
-	//deploying smart contract
-	deployedContractAddress, _, _, err := api.DeployApi(auth, client) //api is redirected from api directory from our contract go file
-	if err != nil {
-		panic(err)
-	}
-
-	// create auth and transaction package for deploying smart contract
-	approverContractAuth := getAccountAuth(client, "e6699dd098b98e323755926b681e42747d661bb8e7c917a52a37ec0295417e29")
+	approverContractAuth := getAccountAuth(client, "bdb9c5e81eea537177441b572529f73b69a7c488e58992b899135f84b01be4bb")
 
 	//deploying smart contract
 	deployedApproverContract, _, _, err := __approverContract.DeployApi(approverContractAuth, client, "31d6cfe0d16ae931b73c59d7e0c089c0", "032f75b3ca02a393196a818328bd32e8") //api is redirected from api directory from our contract go file
@@ -45,7 +37,7 @@ func main() {
 	}
 
 	// create auth and transaction package for deploying smart contract
-	funderApproverContractAuth := getAccountAuth(client, "2156c8093610e127f3035d9c7c09fd59cafb602159a48746af2b457889bd54ce")
+	funderApproverContractAuth := getAccountAuth(client, "33cef24eb7259a17da258591c3d151918cbd2df4848f3931a947ce7f6a006a35")
 
 	//deploying smart contract
 	deployedFunderApproverContract, _, _, err := __funderApproverContract.DeployApi(funderApproverContractAuth, client, "31d6cfe0d16ae931b73c59d7e0c089c0", "032f75b3ca02a393196a818328bd32e8") //api is redirected from api directory from our contract go file
@@ -53,7 +45,24 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println("Deployed contract address : ", deployedContractAddress.Hex())                // print deployed contract address
+	// create auth and transaction package for deploying smart contract
+	monitoringContractAuth := getAccountAuth(client, "d80aa9ac9589d95843e3c9c41244c645ada11acf6b5b6b737250dcc980da0a1c")
+
+	//deploying smart contract
+	deployedMonitoringContract, _, _, err := __monitoringContract.DeployApi(monitoringContractAuth, client, "31d6cfe0d16ae931b73c59d7e0c089c0", "032f75b3ca02a393196a818328bd32e8", "Agus pod", "Jawa Barat", "Cianjur", "Mujair") //api is redirected from api directory from our contract go file
+	if err != nil {
+		panic(err)
+	}
+
+	// create auth and transaction package for deploying smart contract
+	agreementContractAuth := getAccountAuth(client, "0fb7018d4329c7fa18d0e1277d6b1f7face1f4d17769a2a9683aff7885e8a62c")
+
+	//deploying smart contract
+	deployedAgreementContract, _, _, err := __agreementContract.DeployApi(agreementContractAuth, client, "31d6cfe0d16ae931b73c59d7e0c089c0") //api is redirected from api directory from our contract go file
+	if err != nil {
+		panic(err)
+	}
+
 	fmt.Println("Deployed contract approver : ", deployedApproverContract.Hex())              // print deployed contract address
 	fmt.Println("Deployed contract funder approver : ", deployedFunderApproverContract.Hex()) // print deployed contract address
 
@@ -62,12 +71,6 @@ func main() {
 	// Middleware
 	// e.Use(middleware.Logger())
 	// e.Use(middleware.Recover())
-
-	// create connection object to connect through are binary go file and deployed contract with help of address
-	conn, err := api.NewApi(common.HexToAddress(deployedContractAddress.Hex()), client)
-	if err != nil {
-		panic(err)
-	}
 
 	// create connection object to connect through are binary go file and deployed contract with help of address
 	connApprover, errApprover := __approverContract.NewApi(common.HexToAddress(deployedApproverContract.Hex()), client)
@@ -79,6 +82,18 @@ func main() {
 	connFunderApprover, errFunderApprover := __funderApproverContract.NewApi(common.HexToAddress(deployedFunderApproverContract.Hex()), client)
 	if errFunderApprover != nil {
 		panic(errApprover)
+	}
+
+	// create connection object to connect through are binary go file and deployed contract with help of address
+	connMonitoring, errMonitoring := __monitoringContract.NewApi(common.HexToAddress(deployedMonitoringContract.Hex()), client)
+	if errMonitoring != nil {
+		panic(errMonitoring)
+	}
+
+	// create connection object to connect through are binary go file and deployed contract with help of address
+	connAgreement, errAgreement := __agreementContract.NewApi(common.HexToAddress(deployedAgreementContract.Hex()), client)
+	if errAgreement != nil {
+		panic(errAgreement)
 	}
 
 	e.GET("/funders", func(c echo.Context) error {
@@ -112,12 +127,140 @@ func main() {
 		//creating auth object for above account
 		auth := getAccountAuth(client, v.PrivateKey)
 
-		// modalgiven, _ := v["modalgiven"].(int)
-		// creditscore, _ := v["creditscore"].(int)
-
-		// fmt.Println(modalgiven, "-", creditscore)
-
 		reply, err := connFunderApprover.AddFunderApprovalTransaction(auth, uint8(v.Status), v.Filepath, v.timestamp, big.NewInt(int64(v.ModalGiven)), big.NewInt(int64(v.CreditScore)))
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+		return c.JSON(http.StatusOK, reply)
+	})
+
+	e.GET("/monitorings", func(c echo.Context) error {
+		// usecase
+		reply, err := connMonitoring.GetMonitorings(&bind.CallOpts{}) // conn call the balance function of deployed smart contract
+		if err != nil {
+			return err
+		}
+		fmt.Println("/monitorings")
+		return c.JSON(http.StatusOK, reply)
+	})
+
+	type PayloadMonitoringModel struct {
+		PrivateKey  string
+		Weight      int
+		Timestamp   string
+		Temperature int
+		Humidity    int
+	}
+
+	e.POST("/monitoring", func(c echo.Context) error {
+		//gets address of account by which amount to be deposite
+
+		var v PayloadMonitoringModel
+		err := json.NewDecoder(c.Request().Body).Decode(&v)
+		if err != nil {
+			panic(err)
+		}
+
+		//creating auth object for above account
+		auth := getAccountAuth(client, v.PrivateKey)
+
+		reply, err := connMonitoring.AddMonitoring(auth, v.Timestamp, big.NewInt(int64(v.Weight)), big.NewInt(int64(v.Temperature)), big.NewInt(int64(v.Humidity)))
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+		return c.JSON(http.StatusOK, reply)
+	})
+
+	type PayloadSpwaningModel struct {
+		PrivateKey string
+		Weight     int
+		Timestamp  string
+	}
+
+	e.GET("/spawnings", func(c echo.Context) error {
+		// usecase
+		reply, err := connMonitoring.GetSpawnings(&bind.CallOpts{}) // conn call the balance function of deployed smart contract
+		if err != nil {
+			return err
+		}
+		fmt.Println("/spawnings")
+		return c.JSON(http.StatusOK, reply)
+	})
+
+	e.POST("/spawning", func(c echo.Context) error {
+		//gets address of account by which amount to be deposite
+
+		var v PayloadSpwaningModel
+		err := json.NewDecoder(c.Request().Body).Decode(&v)
+		if err != nil {
+			panic(err)
+		}
+
+		//creating auth object for above account
+		auth := getAccountAuth(client, v.PrivateKey)
+
+		reply, err := connMonitoring.AddSpawning(auth, v.Timestamp, big.NewInt(int64(v.Weight)))
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+		return c.JSON(http.StatusOK, reply)
+	})
+
+	e.GET("/agreements", func(c echo.Context) error {
+		// usecase
+		reply, err := connAgreement.GetAgreements(&bind.CallOpts{}) // conn call the balance function of deployed smart contract
+		if err != nil {
+			return err
+		}
+		fmt.Println("/agreements")
+		return c.JSON(http.StatusOK, reply)
+	})
+
+	type PayloadAgreementModel struct {
+		PrivateKey       string
+		Timestamp        string
+		ApproverFunderId string
+		MonitoringId     string
+		ApproverId       string
+		Signed           string
+	}
+
+	e.POST("/agreement", func(c echo.Context) error {
+		//gets address of account by which amount to be deposite
+
+		var v PayloadAgreementModel
+		err := json.NewDecoder(c.Request().Body).Decode(&v)
+		if err != nil {
+			panic(err)
+		}
+
+		//creating auth object for above account
+		auth := getAccountAuth(client, v.PrivateKey)
+
+		reply, err := connAgreement.AddAgreement(auth, v.Timestamp, v.ApproverFunderId, v.MonitoringId, v.ApproverId, v.Signed)
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+		return c.JSON(http.StatusOK, reply)
+	})
+
+	e.POST("/spawning", func(c echo.Context) error {
+		//gets address of account by which amount to be deposite
+
+		var v PayloadAgreementModel
+		err := json.NewDecoder(c.Request().Body).Decode(&v)
+		if err != nil {
+			panic(err)
+		}
+
+		//creating auth object for above account
+		auth := getAccountAuth(client, v.PrivateKey)
+
+		reply, err := connAgreement.AddAgreement(auth, v.Timestamp, v.ApproverFunderId, v.MonitoringId, v.ApproverId, v.Signed)
 		if err != nil {
 			fmt.Println(err)
 			return err
@@ -207,41 +350,6 @@ func main() {
 		auth := getAccountAuth(client, v["accountPrivateKey"].(string))
 
 		reply, err := connApprover.AddApprovalTransaction(auth, v["from"].(string), v["to"].(string), uint8(v["status"].(float64)), v["filepath"].(string))
-		if err != nil {
-			return err
-		}
-		return c.JSON(http.StatusOK, reply)
-	})
-
-	e.GET("/balance", func(c echo.Context) error {
-		// usecase
-		reply, err := conn.Balance(&bind.CallOpts{}) // conn call the balance function of deployed smart contract
-		if err != nil {
-			return err
-		}
-		fmt.Println("/balance")
-		return c.JSON(http.StatusOK, reply)
-	})
-
-	e.POST("/deposite/:amount", func(c echo.Context) error {
-		amount := c.Param("amount")
-		amt, _ := strconv.Atoi(amount)
-
-		fmt.Println("/deposite : ", amount, amt)
-
-		//gets address of account by which amount to be deposite
-		var v map[string]interface{}
-		err := json.NewDecoder(c.Request().Body).Decode(&v)
-		if err != nil {
-			panic(err)
-		}
-
-		fmt.Println("/v : ", v)
-
-		//creating auth object for above account
-		auth := getAccountAuth(client, v["accountPrivateKey"].(string))
-
-		reply, err := conn.Deposite(auth, big.NewInt(int64(amt)))
 		if err != nil {
 			return err
 		}
