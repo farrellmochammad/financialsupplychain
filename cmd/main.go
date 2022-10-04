@@ -9,6 +9,8 @@ import (
 	__funderApproverContract "financingsupplychain/api/funderapprovercontract"
 	__monitoringContract "financingsupplychain/api/monitoringcontract"
 
+	__authUsecase "financingsupplychain/usecases/auth"
+
 	"fmt"
 	"math/big"
 	"net/http"
@@ -22,13 +24,13 @@ import (
 
 func main() {
 	// address of etherum env
-	client, err := ethclient.Dial("http://172.31.64.1:7545")
+	client, err := ethclient.Dial("http://172.30.224.1:7545")
 	if err != nil {
 		panic(err)
 	}
 
 	// create auth and transaction package for deploying smart contract
-	approverContractAuth := getAccountAuth(client, "bdb9c5e81eea537177441b572529f73b69a7c488e58992b899135f84b01be4bb")
+	approverContractAuth := getAccountAuth(client, "8697fa9dac0c9dd063af41430f5eb38150a879764f9332dceaa3ba08694b6925")
 
 	//deploying smart contract
 	deployedApproverContract, _, _, err := __approverContract.DeployApi(approverContractAuth, client, "31d6cfe0d16ae931b73c59d7e0c089c0", "032f75b3ca02a393196a818328bd32e8") //api is redirected from api directory from our contract go file
@@ -37,7 +39,7 @@ func main() {
 	}
 
 	// create auth and transaction package for deploying smart contract
-	funderApproverContractAuth := getAccountAuth(client, "33cef24eb7259a17da258591c3d151918cbd2df4848f3931a947ce7f6a006a35")
+	funderApproverContractAuth := getAccountAuth(client, "e994a0ff4b95cf88b6a611f32ba6c64f8ef4d23ab5c19f3f15c484a42b17be85")
 
 	//deploying smart contract
 	deployedFunderApproverContract, _, _, err := __funderApproverContract.DeployApi(funderApproverContractAuth, client, "31d6cfe0d16ae931b73c59d7e0c089c0", "032f75b3ca02a393196a818328bd32e8") //api is redirected from api directory from our contract go file
@@ -46,7 +48,7 @@ func main() {
 	}
 
 	// create auth and transaction package for deploying smart contract
-	monitoringContractAuth := getAccountAuth(client, "d80aa9ac9589d95843e3c9c41244c645ada11acf6b5b6b737250dcc980da0a1c")
+	monitoringContractAuth := getAccountAuth(client, "e994a0ff4b95cf88b6a611f32ba6c64f8ef4d23ab5c19f3f15c484a42b17be85")
 
 	//deploying smart contract
 	deployedMonitoringContract, _, _, err := __monitoringContract.DeployApi(monitoringContractAuth, client, "31d6cfe0d16ae931b73c59d7e0c089c0", "032f75b3ca02a393196a818328bd32e8", "Agus pod", "Jawa Barat", "Cianjur", "Mujair") //api is redirected from api directory from our contract go file
@@ -55,7 +57,7 @@ func main() {
 	}
 
 	// create auth and transaction package for deploying smart contract
-	agreementContractAuth := getAccountAuth(client, "0fb7018d4329c7fa18d0e1277d6b1f7face1f4d17769a2a9683aff7885e8a62c")
+	agreementContractAuth := getAccountAuth(client, "6e8be54bf39503668207834fa023feadfa2bbaf094cd36183ab5241b885232a8")
 
 	//deploying smart contract
 	deployedAgreementContract, _, _, err := __agreementContract.DeployApi(agreementContractAuth, client, "31d6cfe0d16ae931b73c59d7e0c089c0") //api is redirected from api directory from our contract go file
@@ -178,6 +180,9 @@ func main() {
 		Weight     int
 		Timestamp  string
 	}
+
+	e.POST("/login", __authUsecase.Login)
+	e.POST("/register", __authUsecase.Register)
 
 	e.GET("/spawnings", func(c echo.Context) error {
 		// usecase
