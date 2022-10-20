@@ -11,6 +11,8 @@ import (
 
 	__authUsecase "financingsupplychain/usecases/auth"
 
+	__middleware "financingsupplychain/middleware"
+
 	"fmt"
 	"math/big"
 	"net/http"
@@ -24,7 +26,7 @@ import (
 
 func main() {
 	// address of etherum env
-	client, err := ethclient.Dial("http://172.30.224.1:7545")
+	client, err := ethclient.Dial("http://172.17.224.1:7545")
 	if err != nil {
 		panic(err)
 	}
@@ -181,8 +183,9 @@ func main() {
 		Timestamp  string
 	}
 
-	e.POST("/login", __authUsecase.Login)
+	e.POST("/login", __middleware.GenerateJWT(__authUsecase.Login))
 	e.POST("/register", __authUsecase.Register)
+	e.GET("/Testjwt", __middleware.ValidateJWT(__authUsecase.OnlyTest))
 
 	e.GET("/spawnings", func(c echo.Context) error {
 		// usecase

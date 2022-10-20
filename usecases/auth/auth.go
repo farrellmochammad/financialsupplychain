@@ -2,6 +2,7 @@ package auth
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -17,7 +18,7 @@ type Credential struct {
 }
 
 func Login(c echo.Context) error {
-	var user Credential
+	var user UserLogin
 	err := c.Bind(&user)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{
@@ -38,55 +39,73 @@ func Login(c echo.Context) error {
 			})
 		}
 	}
-	sign := jwt.New(jwt.GetSigningMethod("HS256"))
-	token, err := sign.SignedString([]byte("secret"))
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"username": user.Username,
+		"role":     "some role",
+	})
+
+	hmacSampleSecret := []byte("123156")
+	tokenString, err := token.SignedString(hmacSampleSecret)
+
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
 			"message": err.Error(),
 		})
 	}
 	return c.JSON(http.StatusOK, map[string]interface{}{
-		"token": token,
+		"token": tokenString,
 	})
 }
 
 func Register(c echo.Context) error {
 
-	db, errDB := sql.Open("sqlite3", "./users_db.db")
+	db, errDB := sql.Open("sqlite3", "./username_db.db")
 	if errDB != nil {
 		panic(errDB)
 	}
 
-	// users_table := `CREATE TABLE users (
-	//     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-	//     "FirstName" TEXT,
-	//     "LastName" TEXT,
-	//     "Dept" TEXT,
-	//     "Salary" INT);`
-	// query, err := db.Prepare(users_table)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// query.Exec()
-	// fmt.Println("Table created successfully!")
-
-	records := `INSERT INTO users(FirstName, LastName, Dept, Salary) VALUES (?, ?, ?, ?)`
+	records := `INSERT INTO users(Username, Password, Role) VALUES (?, ?, ?)`
 	query, err := db.Prepare(records)
 	if err != nil {
 		log.Fatal(err)
 	}
-	FirstName := "a"
-	LastName := "b"
-	Dept := "231"
-	Salary := 3123
-	_, err = query.Exec(FirstName, LastName, Dept, Salary)
+
+	user := new(UserRegister)
+	if err = c.Bind(&user); err != nil {
+		return c.JSON(http.StatusBadGateway, map[string]interface{}{
+			"message": "failed",
+		})
+	}
+
+	_, err = query.Exec(user.Username, user.Password, user.Role)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	db.Close()
 
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"token": "dwad",
+	return c.JSON(http.StatusAccepted, map[string]interface{}{
+		"Statys": "Login Success",
 	})
+}
+
+func OnlyTest(c echo.Context) error {
+	fmt.Println("only test", c.Get("username"))
+	fmt.Println("only test", c.Get("role"))
+	return c.JSON(http.StatusAccepted, map[string]interface{}{
+		"Statys": "Login Success",
+	})
+}
+
+type UserRegister struct {
+	Username string `json:"username" form:"username" query:"username"`
+	Password string `json:"password" form:"password" query:"password"`
+	Role     string `json:"role" form:"role" query:"role"`
+}
+
+type UserLogin struct {
+	Username string `json:"username" form:"username" query:"username"`
+	Password string `json:"password" form:"password" query:"password"`
+	Role     string `json:"role" form:"role" query:"role"`
 }
