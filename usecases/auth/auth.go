@@ -1,12 +1,13 @@
 package auth
 
 import (
-	"database/sql"
 	"fmt"
-	"log"
 	"net/http"
 
 	_ "github.com/mattn/go-sqlite3"
+
+	__model "financingsupplychain/models"
+	__repository "financingsupplychain/repositories"
 
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
@@ -18,31 +19,28 @@ type Credential struct {
 }
 
 func Login(c echo.Context) error {
-	var user UserLogin
+	var user __model.UserLogin
 	err := c.Bind(&user)
-	if err != nil {
+
+	userQuery := __repository.GetUsers(user.Username)
+
+	if user.Username != userQuery.Username {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{
 			"status":  http.StatusBadRequest,
-			"message": "can't bind struct",
+			"message": "Username not exist",
 		})
 	}
-	if user.Username != "myname" {
-		return c.JSON(http.StatusUnauthorized, map[string]interface{}{
-			"status":  http.StatusUnauthorized,
-			"message": "wrong username or password",
+
+	if user.Password != userQuery.Password {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"status":  http.StatusBadRequest,
+			"message": "Wrong password",
 		})
-	} else {
-		if user.Password != "myname123" {
-			return c.JSON(http.StatusUnauthorized, map[string]interface{}{
-				"status":  http.StatusUnauthorized,
-				"message": "wrong username or password",
-			})
-		}
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"username": user.Username,
-		"role":     "some role",
+		"username": userQuery.Username,
+		"role":     userQuery.Role,
 	})
 
 	hmacSampleSecret := []byte("123156")
@@ -60,33 +58,17 @@ func Login(c echo.Context) error {
 
 func Register(c echo.Context) error {
 
-	db, errDB := sql.Open("sqlite3", "./username_db.db")
-	if errDB != nil {
-		panic(errDB)
-	}
-
-	records := `INSERT INTO users(Username, Password, Role) VALUES (?, ?, ?)`
-	query, err := db.Prepare(records)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	user := new(UserRegister)
-	if err = c.Bind(&user); err != nil {
+	user := new(__model.UserRegister)
+	if err := c.Bind(&user); err != nil {
 		return c.JSON(http.StatusBadGateway, map[string]interface{}{
 			"message": "failed",
 		})
 	}
 
-	_, err = query.Exec(user.Username, user.Password, user.Role)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	db.Close()
+	__repository.InsertUsers(user)
 
 	return c.JSON(http.StatusAccepted, map[string]interface{}{
-		"Statys": "Login Success",
+		"Statys": "Register Success",
 	})
 }
 
@@ -96,16 +78,4 @@ func OnlyTest(c echo.Context) error {
 	return c.JSON(http.StatusAccepted, map[string]interface{}{
 		"Statys": "Login Success",
 	})
-}
-
-type UserRegister struct {
-	Username string `json:"username" form:"username" query:"username"`
-	Password string `json:"password" form:"password" query:"password"`
-	Role     string `json:"role" form:"role" query:"role"`
-}
-
-type UserLogin struct {
-	Username string `json:"username" form:"username" query:"username"`
-	Password string `json:"password" form:"password" query:"password"`
-	Role     string `json:"role" form:"role" query:"role"`
 }
