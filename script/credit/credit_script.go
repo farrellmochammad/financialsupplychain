@@ -24,6 +24,8 @@ func main() {
 
 	credit_table := `CREATE TABLE credit (
 	    "CreditId" TEXT NOT NULL PRIMARY KEY,
+		"Username" TEXT NOT NULL,
+		"Nik" TEXT NOT NUll,
 	    "CreditAmount" TEXT,
 	    "Status" INTEGER);`
 
