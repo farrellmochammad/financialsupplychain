@@ -7,7 +7,7 @@ import (
 )
 
 func InsertUsers(user *__models.UserRegister) {
-	db, errDB := sql.Open("sqlite3", "./username_db.db")
+	db, errDB := sql.Open("sqlite3", "../username_db.db")
 	if errDB != nil {
 		panic(errDB)
 	}
@@ -27,7 +27,7 @@ func InsertUsers(user *__models.UserRegister) {
 }
 
 func GetUsers(username string) __models.UserLogin {
-	db, errDB := sql.Open("sqlite3", "./username_db.db")
+	db, errDB := sql.Open("sqlite3", "../username_db.db")
 	if errDB != nil {
 		panic(errDB)
 	}

@@ -39,12 +39,17 @@ func ValidateJWT(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 
 		// Validate token
-
 		hmacSampleSecret := "123156"
 		valid, err := validateToken(t[1], hmacSampleSecret)
 		if err != nil {
 			return c.JSON(401, map[string]interface{}{"status": "failed", "message": "Token expired, please login back"})
 		}
+
+		if valid.Claims.(jwt.MapClaims)["role"] != "admin" {
+			return c.JSON(401, map[string]interface{}{"status": "failed", "message": "User doesn't have permission"})
+		}
+
+		fmt.Println("Hollaa")
 
 		c.Set("username", valid.Claims.(jwt.MapClaims)["username"])
 		c.Set("role", valid.Claims.(jwt.MapClaims)["role"])

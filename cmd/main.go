@@ -10,6 +10,7 @@ import (
 	__monitoringContract "financingsupplychain/api/monitoringcontract"
 
 	__authUsecase "financingsupplychain/usecases/auth"
+	__SpawningUsecase "financingsupplychain/usecases/spawning"
 
 	__middleware "financingsupplychain/middleware"
 
@@ -186,36 +187,37 @@ func main() {
 	e.POST("/login", __middleware.GenerateJWT(__authUsecase.Login))
 	e.POST("/register", __authUsecase.Register)
 	e.GET("/Testjwt", __middleware.ValidateJWT(__authUsecase.OnlyTest))
+	e.POST("/spawning", __middleware.ValidateJWT(__SpawningUsecase.InsertSpawning))
 
-	e.GET("/spawnings", func(c echo.Context) error {
-		// usecase
-		reply, err := connMonitoring.GetSpawnings(&bind.CallOpts{}) // conn call the balance function of deployed smart contract
-		if err != nil {
-			return err
-		}
-		fmt.Println("/spawnings")
-		return c.JSON(http.StatusOK, reply)
-	})
+	// e.GET("/spawnings", func(c echo.Context) error {
+	// 	// usecase
+	// 	reply, err := connMonitoring.GetSpawnings(&bind.CallOpts{}) // conn call the balance function of deployed smart contract
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// 	fmt.Println("/spawnings")
+	// 	return c.JSON(http.StatusOK, reply)
+	// })
 
-	e.POST("/spawning", func(c echo.Context) error {
-		//gets address of account by which amount to be deposite
+	// e.POST("/spawning", func(c echo.Context) error {
+	// 	//gets address of account by which amount to be deposite
 
-		var v PayloadSpwaningModel
-		err := json.NewDecoder(c.Request().Body).Decode(&v)
-		if err != nil {
-			panic(err)
-		}
+	// 	var v PayloadSpwaningModel
+	// 	err := json.NewDecoder(c.Request().Body).Decode(&v)
+	// 	if err != nil {
+	// 		panic(err)
+	// 	}
 
-		//creating auth object for above account
-		auth := getAccountAuth(client, v.PrivateKey)
+	// 	//creating auth object for above account
+	// 	auth := getAccountAuth(client, v.PrivateKey)
 
-		reply, err := connMonitoring.AddSpawning(auth, v.Timestamp, big.NewInt(int64(v.Weight)))
-		if err != nil {
-			fmt.Println(err)
-			return err
-		}
-		return c.JSON(http.StatusOK, reply)
-	})
+	// 	reply, err := connMonitoring.AddSpawning(auth, v.Timestamp, big.NewInt(int64(v.Weight)))
+	// 	if err != nil {
+	// 		fmt.Println(err)
+	// 		return err
+	// 	}
+	// 	return c.JSON(http.StatusOK, reply)
+	// })
 
 	e.GET("/agreements", func(c echo.Context) error {
 		// usecase

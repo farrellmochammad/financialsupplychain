@@ -24,6 +24,7 @@ func main() {
 
 	spawning_table := `CREATE TABLE spawning (
 	    "SpawningId" TEXT NOT NULL PRIMARY KEY,
+		"Nik" TEXT NOT NULL,
 	    "Date" TEXT,
 	    "Amount" INTEGER,
 		"FishType" TEXT);`
