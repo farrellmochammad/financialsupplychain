@@ -24,3 +24,29 @@ func InsertSpawning(c echo.Context) error {
 		"Statys": "Insert Spawning Success",
 	})
 }
+
+func GetSpawnings(c echo.Context) error {
+
+	spawnings := __repository.GetSpawnings()
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"data": spawnings,
+	})
+}
+
+func GetSpawning(c echo.Context) error {
+	spawningid := c.Param("spawningid")
+
+	spawning := __repository.GetSpawning(spawningid)
+
+	if (__model.Spawning{}) == spawning {
+		return c.JSON(http.StatusNotFound, map[string]interface{}{
+			"status": "Spawning Id not found",
+		})
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"data": spawning,
+	})
+
+}

@@ -10,6 +10,7 @@ import (
 	__monitoringContract "financingsupplychain/api/monitoringcontract"
 
 	__authUsecase "financingsupplychain/usecases/auth"
+	__ExperienceUsecase "financingsupplychain/usecases/experience"
 	__SpawningUsecase "financingsupplychain/usecases/spawning"
 
 	__middleware "financingsupplychain/middleware"
@@ -188,6 +189,12 @@ func main() {
 	e.POST("/register", __authUsecase.Register)
 	e.GET("/Testjwt", __middleware.ValidateJWT(__authUsecase.OnlyTest))
 	e.POST("/spawning", __middleware.ValidateJWT(__SpawningUsecase.InsertSpawning))
+	e.GET("/spawnings", __middleware.ValidateJWT(__SpawningUsecase.GetSpawnings))
+	e.GET("/spawning/:spawningid", __middleware.ValidateJWT(__SpawningUsecase.GetSpawning))
+
+	e.POST("/experience", __middleware.ValidateJWT(__ExperienceUsecase.InsertExperience))
+	e.GET("/experiences", __middleware.ValidateJWT(__ExperienceUsecase.GetExperiences))
+	e.GET("/experience/:nik", __middleware.ValidateJWT(__ExperienceUsecase.GetExperience))
 
 	// e.GET("/spawnings", func(c echo.Context) error {
 	// 	// usecase

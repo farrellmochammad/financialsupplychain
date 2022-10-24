@@ -26,7 +26,7 @@ func InserSpawning(spawning *__models.Spawning) {
 	defer db.Close()
 }
 
-func GetSpawnings(spawningid string) []__models.Spawning {
+func GetSpawnings() []__models.Spawning {
 	db, errDB := sql.Open("sqlite3", "./spawning_db.db")
 	if errDB != nil {
 		panic(errDB)
@@ -55,4 +55,39 @@ func GetSpawnings(spawningid string) []__models.Spawning {
 	defer db.Close()
 
 	return spawnings
+}
+
+func GetSpawning(spawningid string) __models.Spawning {
+	db, errDB := sql.Open("sqlite3", "./spawning_db.db")
+	if errDB != nil {
+		panic(errDB)
+	}
+
+	rows, err := db.Query("SELECT * FROM spawning")
+	if err != nil {
+		panic(err)
+	}
+
+	var spawningScan __models.Spawning
+	var spawningResult __models.Spawning
+
+	for rows.Next() {
+		err = rows.Scan(&spawningScan.SpawningId, &spawningScan.Nik, &spawningScan.Date, &spawningScan.Amount, &spawningScan.FishType)
+
+		if err != nil {
+			panic(err)
+		}
+
+		if spawningid == spawningScan.SpawningId {
+			spawningResult = spawningScan
+			return spawningResult
+		}
+
+	}
+
+	defer rows.Close()
+
+	defer db.Close()
+
+	return spawningResult
 }

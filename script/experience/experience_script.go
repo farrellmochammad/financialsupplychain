@@ -24,6 +24,7 @@ func main() {
 
 	experience_table := `CREATE TABLE experience (
 	    "Username" TEXT NOT NULL PRIMARY KEY,
+		"Nik" TEXT NOT NULL,
 	    "Date" TEXT,
 	    "DurationOfYears" INTEGER);`
 
