@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	__agreementContract "financingsupplychain/api/agreementcontract"
 	__approverContract "financingsupplychain/api/approvercontract"
+	__creditContract "financingsupplychain/api/creditcontract"
 	__funderApproverContract "financingsupplychain/api/funderapprovercontract"
 	__monitoringContract "financingsupplychain/api/monitoringcontract"
 
@@ -70,8 +71,17 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println("Deployed contract approver : ", deployedApproverContract.Hex())              // print deployed contract address
-	fmt.Println("Deployed contract funder approver : ", deployedFunderApproverContract.Hex()) // print deployed contract address
+	// create auth and transaction package for deploying smart contract
+	creditContractAuth := getAccountAuth(client, "fc73147da3404c85f3324e488de8d964377e5b5ef60992d0fb1538790c73c735")
+
+	//deploying smart contract
+	delpoyedCreditContract, _, _, err := __creditContract.DeployApi(creditContractAuth, client) //api is redirected from api directory from our contract go file
+	if err != nil {
+		panic(err)
+	}
+
+	// fmt.Println("Deployed contract approver : ", deployedApproverContract.Hex())              // print deployed contract address
+	// fmt.Println("Deployed contract funder approver : ", deployedFunderApproverContract.Hex()) // print deployed contract address
 
 	e := echo.New()
 
@@ -101,6 +111,12 @@ func main() {
 	connAgreement, errAgreement := __agreementContract.NewApi(common.HexToAddress(deployedAgreementContract.Hex()), client)
 	if errAgreement != nil {
 		panic(errAgreement)
+	}
+
+	// create connection object to connect through are binary go file and deployed contract with help of address
+	connCredit, errCredit := __creditContract.NewApi(common.HexToAddress(delpoyedCreditContract.Hex()), client)
+	if errCredit != nil {
+		panic(errCredit)
 	}
 
 	e.GET("/funders", func(c echo.Context) error {
@@ -200,6 +216,38 @@ func main() {
 	e.POST("/credit", __middleware.ValidateJWT(__CreditUsecase.InsertCredit))
 	e.GET("/credits", __middleware.ValidateJWT(__CreditUsecase.GetCredits))
 	e.GET("/credit/:creditid", __middleware.ValidateJWT(__CreditUsecase.GetCredit))
+
+	e.POST("/creditcontract", func(c echo.Context) error {
+		var v map[string]interface{}
+		err := json.NewDecoder(c.Request().Body).Decode(&v)
+		if err != nil {
+			panic(err)
+		}
+
+		auth := getAccountAuth(client, v["accountPrivateKey"].(string))
+
+		// usecase
+		reply, err := connCredit.SetCredit(auth, "2", __creditContract.CreditContractCredit{
+			CreditAmount: big.NewInt(100),
+			Status:       true,
+		}) // conn call the balance function of deployed smart contract
+		if err != nil {
+			return err
+		}
+		fmt.Println("/agreements")
+		return c.JSON(http.StatusOK, reply)
+	})
+
+	e.GET("/creditcontract/:nik", func(c echo.Context) error {
+
+		// usecase
+		reply, err := connCredit.GetCredit(&bind.CallOpts{}, c.Param(":nik")) // conn call the balance function of deployed smart contract
+		if err != nil {
+			return err
+		}
+		fmt.Println("/spawnings")
+		return c.JSON(http.StatusOK, reply)
+	})
 
 	// e.GET("/spawnings", func(c echo.Context) error {
 	// 	// usecase
