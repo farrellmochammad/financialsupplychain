@@ -226,10 +226,15 @@ func main() {
 
 		auth := getAccountAuth(client, v["accountPrivateKey"].(string))
 
+		var creditAmount, ok = new(big.Int).SetString(v["creditAmount"].(string), 0)
+		if !ok {
+			panic(err)
+		}
+
 		// usecase
-		reply, err := connCredit.SetCredit(auth, "1", __creditscoreContract.CreditScoreContractCredit{
-			CreditAmount: big.NewInt(100),
-			Status:       true,
+		reply, err := connCredit.SetCredit(auth, v["nik"].(string), __creditscoreContract.CreditScoreContractCredit{
+			CreditAmount: creditAmount,
+			Status:       v["status"].(bool),
 		}) // conn call the balance function of deployed smart contract
 		if err != nil {
 			return err
@@ -239,19 +244,10 @@ func main() {
 	})
 
 	e.GET("/creditcontract/credit/:nik", func(c echo.Context) error {
-		var v map[string]interface{}
-		err := json.NewDecoder(c.Request().Body).Decode(&v)
-		if err != nil {
-			panic(err)
-		}
-
-		auth := getAccountAuth(client, v["accountPrivateKey"].(string))
+		nik := c.Param("nik")
 
 		// usecase
-		reply, err := connCredit.SetCredit(auth, "1", __creditscoreContract.CreditScoreContractCredit{
-			CreditAmount: big.NewInt(100),
-			Status:       true,
-		}) // conn call the balance function of deployed smart contract
+		reply, err := connCredit.GetCredit(&bind.CallOpts{}, nik) // conn call the balance function of deployed smart contract
 		if err != nil {
 			return err
 		}
