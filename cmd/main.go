@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	__agreementContract "financingsupplychain/api/agreementcontract"
 	__approverContract "financingsupplychain/api/approvercontract"
-	__creditContract "financingsupplychain/api/creditcontract"
+	__creditscoreContract "financingsupplychain/api/creditscorecontract"
 	__funderApproverContract "financingsupplychain/api/funderapprovercontract"
 	__monitoringContract "financingsupplychain/api/monitoringcontract"
 
@@ -75,7 +75,7 @@ func main() {
 	creditContractAuth := getAccountAuth(client, "fc73147da3404c85f3324e488de8d964377e5b5ef60992d0fb1538790c73c735")
 
 	//deploying smart contract
-	delpoyedCreditContract, _, _, err := __creditContract.DeployApi(creditContractAuth, client) //api is redirected from api directory from our contract go file
+	delpoyedCreditContract, _, _, err := __creditscoreContract.DeployApi(creditContractAuth, client) //api is redirected from api directory from our contract go file
 	if err != nil {
 		panic(err)
 	}
@@ -114,7 +114,7 @@ func main() {
 	}
 
 	// create connection object to connect through are binary go file and deployed contract with help of address
-	connCredit, errCredit := __creditContract.NewApi(common.HexToAddress(delpoyedCreditContract.Hex()), client)
+	connCredit, errCredit := __creditscoreContract.NewApi(common.HexToAddress(delpoyedCreditContract.Hex()), client)
 	if errCredit != nil {
 		panic(errCredit)
 	}
@@ -227,7 +227,28 @@ func main() {
 		auth := getAccountAuth(client, v["accountPrivateKey"].(string))
 
 		// usecase
-		reply, err := connCredit.SetCredit(auth, "2", __creditContract.CreditContractCredit{
+		reply, err := connCredit.SetCredit(auth, "1", __creditscoreContract.CreditScoreContractCredit{
+			CreditAmount: big.NewInt(100),
+			Status:       true,
+		}) // conn call the balance function of deployed smart contract
+		if err != nil {
+			return err
+		}
+		fmt.Println("/agreements")
+		return c.JSON(http.StatusOK, reply)
+	})
+
+	e.GET("/creditcontract/credit/:nik", func(c echo.Context) error {
+		var v map[string]interface{}
+		err := json.NewDecoder(c.Request().Body).Decode(&v)
+		if err != nil {
+			panic(err)
+		}
+
+		auth := getAccountAuth(client, v["accountPrivateKey"].(string))
+
+		// usecase
+		reply, err := connCredit.SetCredit(auth, "1", __creditscoreContract.CreditScoreContractCredit{
 			CreditAmount: big.NewInt(100),
 			Status:       true,
 		}) // conn call the balance function of deployed smart contract

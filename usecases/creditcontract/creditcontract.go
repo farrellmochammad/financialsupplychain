@@ -5,12 +5,12 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	__creditContract "financingsupplychain/api/creditcontract"
+	__creditscorecontract "financingsupplychain/api/creditscorecontract"
 	__model "financingsupplychain/models"
 	__repository "financingsupplychain/repositories"
 )
 
-func InsertCredit(c echo.Context, creditcontract *__creditContract.Api) error {
+func InsertCredit(c echo.Context, creditcontract *__creditscorecontract.Api) error {
 
 	credit := new(__model.Credit)
 	if err := c.Bind(&credit); err != nil {
