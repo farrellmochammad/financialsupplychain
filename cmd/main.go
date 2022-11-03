@@ -26,6 +26,7 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
@@ -84,6 +85,8 @@ func main() {
 	// fmt.Println("Deployed contract funder approver : ", deployedFunderApproverContract.Hex()) // print deployed contract address
 
 	e := echo.New()
+
+	e.Use(middleware.CORS())
 
 	// Middleware
 	// e.Use(middleware.Logger())
