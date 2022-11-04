@@ -12,13 +12,13 @@ func InsertExperience(experience *__models.Experience) {
 		panic(errDB)
 	}
 
-	records := `INSERT INTO experience(Username, Nik, Date, DurationOfYears) VALUES (?, ?, ?, ?)`
+	records := `INSERT INTO experience(Nik, Name, Phone, Dob, Address, StartFarming, FishType, NumberOfPonds, Notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
 	query, err := db.Prepare(records)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	_, err = query.Exec(experience.Username, experience.Nik, experience.Date, experience.DurationOfYears)
+	_, err = query.Exec(experience.Nik, experience.Name, experience.Phone, experience.Dob, experience.Address, experience.StartFarming, experience.FishType, experience.NumberOfPonds, experience.Notes)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -42,7 +42,7 @@ func GetExperiences() []__models.Experience {
 	var experiences []__models.Experience
 
 	for rows.Next() {
-		err = rows.Scan(&scanner.Username, &scanner.Nik, &scanner.Date, &scanner.DurationOfYears)
+		err = rows.Scan(&scanner.Nik, &scanner.Name, &scanner.Phone, &scanner.Dob, &scanner.Address, &scanner.StartFarming, &scanner.FishType, &scanner.NumberOfPonds, &scanner.Notes)
 
 		if err != nil {
 			panic(err)
@@ -74,7 +74,7 @@ func GetExperience(nik string) __models.Experience {
 	var experience __models.Experience
 
 	for rows.Next() {
-		err = rows.Scan(&scanner.Username, &scanner.Nik, &scanner.Date, &scanner.DurationOfYears)
+		err = rows.Scan(&scanner.Nik, &scanner.Name, &scanner.Phone, &scanner.Dob, &scanner.Address, &scanner.StartFarming, &scanner.FishType, &scanner.NumberOfPonds, &scanner.Notes)
 
 		if err != nil {
 			panic(err)

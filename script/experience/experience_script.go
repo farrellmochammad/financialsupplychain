@@ -23,10 +23,15 @@ func main() {
 	}
 
 	experience_table := `CREATE TABLE experience (
-	    "Username" TEXT NOT NULL PRIMARY KEY,
-		"Nik" TEXT NOT NULL,
-	    "Date" TEXT,
-	    "DurationOfYears" INTEGER);`
+		"Nik" TEXT NOT NULL PRIMARY KEY,
+		"Name" TEXT NOT NULL,
+		"Phone" TEXT NOT NULL,
+		"Dob" TEXT,
+		"Address" TEXT,
+		"StartFarming" TEXT,
+		"FishType" TEXT,
+		"NumberOfPonds" INTEGER,
+	    "Notes" TEXT);`
 
 	query, err := db.Prepare(experience_table)
 	if err != nil {
