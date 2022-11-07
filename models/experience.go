@@ -10,4 +10,5 @@ type Experience struct {
 	FishType      string `json:"fish_type" form:"fish_type" query:"fish_type"`
 	NumberOfPonds int    `json:"number_of_ponds" form:"number_of_ponds" query:"number_of_ponds"`
 	Notes         string `json:"notes" form:"notes" query:"notes"`
+	CurrentStatus string `json:"current_status" form:"current_status" query:"current_status"`
 }

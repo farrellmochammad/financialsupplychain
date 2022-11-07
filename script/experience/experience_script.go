@@ -31,7 +31,8 @@ func main() {
 		"StartFarming" TEXT,
 		"FishType" TEXT,
 		"NumberOfPonds" INTEGER,
-	    "Notes" TEXT);`
+	    "Notes" TEXT,
+		"CurrentStatus" TEXT);`
 
 	query, err := db.Prepare(experience_table)
 	if err != nil {
