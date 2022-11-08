@@ -82,6 +82,10 @@ func GetExperience(nik string) __models.Experience {
 
 		if nik == scanner.Nik {
 			experience = scanner
+			defer rows.Close()
+
+			defer db.Close()
+
 			return experience
 		}
 

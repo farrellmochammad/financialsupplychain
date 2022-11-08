@@ -47,6 +47,10 @@ func GetUsers(username string) __models.UserLogin {
 		}
 
 		if userScan.Username == username {
+			defer rows.Close()
+
+			defer db.Close()
+
 			return userScan
 		}
 

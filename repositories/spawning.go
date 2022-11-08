@@ -80,6 +80,11 @@ func GetSpawning(spawningid string) __models.Spawning {
 
 		if spawningid == spawningScan.SpawningId {
 			spawningResult = spawningScan
+
+			defer rows.Close()
+
+			defer db.Close()
+
 			return spawningResult
 		}
 

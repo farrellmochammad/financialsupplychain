@@ -82,6 +82,11 @@ func GetCredit(creditid string) __models.Credit {
 
 		if creditid == scanner.CreditId {
 			credit = scanner
+
+			defer rows.Close()
+
+			defer db.Close()
+
 			return credit
 		}
 

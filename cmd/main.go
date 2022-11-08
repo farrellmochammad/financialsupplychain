@@ -11,6 +11,7 @@ import (
 	__authUsecase "financingsupplychain/usecases/auth"
 	__CreditUsecase "financingsupplychain/usecases/credit"
 	__ExperienceUsecase "financingsupplychain/usecases/experience"
+	__MonitoringUsecase "financingsupplychain/usecases/monitoring"
 	__SpawningUsecase "financingsupplychain/usecases/spawning"
 
 	__middleware "financingsupplychain/middleware"
@@ -213,6 +214,10 @@ func main() {
 	e.POST("/experience", __middleware.ValidateJWT(__ExperienceUsecase.InsertExperience))
 	e.GET("/experiences", __middleware.ValidateJWT(__ExperienceUsecase.GetExperiences))
 	e.GET("/experience/:nik", __middleware.ValidateJWT(__ExperienceUsecase.GetExperience))
+
+	e.POST("/monitoring", __middleware.ValidateJWT(__MonitoringUsecase.InsertMonitoring))
+	e.GET("/monitorings", __middleware.ValidateJWT(__MonitoringUsecase.GetMonitorings))
+	e.GET("/monitoring/:fundid", __middleware.ValidateJWT(__MonitoringUsecase.GetMonitoring))
 
 	e.POST("/credit", __middleware.ValidateJWT(__CreditUsecase.InsertCredit))
 	e.GET("/credits", __middleware.ValidateJWT(__CreditUsecase.GetCredits))
