@@ -59,7 +59,7 @@ func GetExperiences() []__models.Experience {
 	return experiences
 }
 
-func GetExperience(nik string) __models.Experience {
+func GetExperience(nik string) []__models.Experience {
 	db, errDB := sql.Open("sqlite3", "./experience_db.db")
 	if errDB != nil {
 		panic(errDB)
@@ -71,7 +71,7 @@ func GetExperience(nik string) __models.Experience {
 	}
 
 	var scanner __models.Experience
-	var experience __models.Experience
+	var experiences []__models.Experience
 
 	for rows.Next() {
 		err = rows.Scan(&scanner.Nik, &scanner.Name, &scanner.Phone, &scanner.Dob, &scanner.Address, &scanner.StartFarming, &scanner.FishType, &scanner.NumberOfPonds, &scanner.Notes, &scanner.CurrentStatus)
@@ -81,12 +81,7 @@ func GetExperience(nik string) __models.Experience {
 		}
 
 		if nik == scanner.Nik {
-			experience = scanner
-			defer rows.Close()
-
-			defer db.Close()
-
-			return experience
+			experiences = append(experiences, scanner)
 		}
 
 	}
@@ -95,5 +90,5 @@ func GetExperience(nik string) __models.Experience {
 
 	defer db.Close()
 
-	return experience
+	return experiences
 }

@@ -59,7 +59,7 @@ func GetMonitorings() []__models.Monitoring {
 	return monitorings
 }
 
-func GetMonitoring(nik string) __models.Monitoring {
+func GetMonitoring(fundid string) []__models.Monitoring {
 	db, errDB := sql.Open("sqlite3", "./monitoring_db.db")
 	if errDB != nil {
 		panic(errDB)
@@ -71,7 +71,7 @@ func GetMonitoring(nik string) __models.Monitoring {
 	}
 
 	var scanner __models.Monitoring
-	var monitoring __models.Monitoring
+	var monitorings []__models.Monitoring
 
 	for rows.Next() {
 		err = rows.Scan(&scanner.FundId, &scanner.Nik, &scanner.Name, &scanner.TotalSpawning, &scanner.FishType)
@@ -80,14 +80,8 @@ func GetMonitoring(nik string) __models.Monitoring {
 			panic(err)
 		}
 
-		if nik == scanner.Nik {
-			monitoring = scanner
-
-			defer rows.Close()
-
-			defer db.Close()
-
-			return monitoring
+		if fundid == scanner.FundId {
+			monitorings = append(monitorings, scanner)
 		}
 
 	}
@@ -96,5 +90,5 @@ func GetMonitoring(nik string) __models.Monitoring {
 
 	defer db.Close()
 
-	return monitoring
+	return monitorings
 }

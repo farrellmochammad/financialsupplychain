@@ -37,18 +37,18 @@ func GetMonitorings(c echo.Context) error {
 
 func GetMonitoring(c echo.Context) error {
 
-	nik := c.Param("fundid")
+	fundid := c.Param("fundid")
 
-	monitoring := __repository.GetMonitoring(nik)
+	monitorings := __repository.GetMonitoring(fundid)
 
-	if (__model.Monitoring{}) == monitoring {
+	if len(monitorings) == 0 {
 		return c.JSON(http.StatusNotFound, map[string]interface{}{
 			"status": "monitoring data not found",
 		})
 	}
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
-		"data": monitoring,
+		"data": monitorings,
 	})
 
 }

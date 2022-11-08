@@ -38,16 +38,16 @@ func GetExperience(c echo.Context) error {
 
 	nik := c.Param("nik")
 
-	experience := __repository.GetExperience(nik)
+	experiences := __repository.GetExperience(nik)
 
-	if (__model.Experience{}) == experience {
+	if len(experiences) == 0 {
 		return c.JSON(http.StatusNotFound, map[string]interface{}{
 			"status": "Experience not found",
 		})
 	}
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
-		"data": experience,
+		"data": experiences,
 	})
 
 }
