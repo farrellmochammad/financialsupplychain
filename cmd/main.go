@@ -7,6 +7,8 @@ import (
 	__agreementContract "financingsupplychain/api/agreementcontract"
 	__approverContract "financingsupplychain/api/approvercontract"
 	__creditscoreContract "financingsupplychain/api/creditscorecontract"
+	__transactionsContract "financingsupplychain/api/transactioncontract"
+	"time"
 
 	__authUsecase "financingsupplychain/usecases/auth"
 	__CreditUsecase "financingsupplychain/usecases/credit"
@@ -80,6 +82,15 @@ func main() {
 		panic(err)
 	}
 
+	// create auth and transaction package for deploying smart contract
+	transactionContractAuth := getAccountAuth(client, "fc73147da3404c85f3324e488de8d964377e5b5ef60992d0fb1538790c73c735")
+
+	//deploying smart contract
+	deployedTransactionContract, _, _, err := __transactionsContract.DeployApi(transactionContractAuth, client) //api is redirected from api directory from our contract go file
+	if err != nil {
+		panic(err)
+	}
+
 	// fmt.Println("Deployed contract approver : ", deployedApproverContract.Hex())              // print deployed contract address
 	// fmt.Println("Deployed contract funder approver : ", deployedFunderApproverContract.Hex()) // print deployed contract address
 
@@ -118,6 +129,12 @@ func main() {
 	// create connection object to connect through are binary go file and deployed contract with help of address
 	connCredit, errCredit := __creditscoreContract.NewApi(common.HexToAddress(delpoyedCreditContract.Hex()), client)
 	if errCredit != nil {
+		panic(errCredit)
+	}
+
+	// create connection object to connect through are binary go file and deployed contract with help of address
+	connTransaction, errTransaction := __transactionsContract.NewApi(common.HexToAddress(deployedTransactionContract.Hex()), client)
+	if errTransaction != nil {
 		panic(errCredit)
 	}
 
@@ -218,6 +235,47 @@ func main() {
 	e.POST("/monitoring", __middleware.ValidateJWT(__MonitoringUsecase.InsertMonitoring))
 	e.GET("/monitorings", __middleware.ValidateJWT(__MonitoringUsecase.GetMonitorings))
 	e.GET("/monitoring/:fundid", __middleware.ValidateJWT(__MonitoringUsecase.GetMonitoring))
+	e.POST("/monitoring/pond/:pondid", __middleware.ValidateJWT(func(c echo.Context) error {
+		var v map[string]interface{}
+		err := json.NewDecoder(c.Request().Body).Decode(&v)
+		if err != nil {
+			panic(err)
+		}
+
+		weight, weightStat := new(big.Int).SetString(v["weight"].(string), 0)
+		if !weightStat {
+			panic(err)
+		}
+
+		temperature, temperatureStat := new(big.Int).SetString(v["temperature"].(string), 0)
+		if !temperatureStat {
+			panic(err)
+		}
+
+		humidity, humidityStat := new(big.Int).SetString(v["humidity"].(string), 0)
+		if !humidityStat {
+			panic(err)
+		}
+
+		reply, err := connTransaction.SetMonitoring(transactionContractAuth, c.Param(":pondid"), __transactionsContract.TransactionContractMonitoring{
+			Timestamp:   time.Now().String(),
+			Weight:      weight,
+			Temperature: temperature,
+			Humidity:    humidity,
+		})
+
+		// usecase
+		// reply, err := connTransaction.Add(transactionContractAuth, v["nik"].(string), __creditscoreContract.CreditScoreContractCredit{
+		// 	CreditAmount: creditAmount,
+		// 	Status:       v["status"].(bool),
+		// }) // conn call the balance function of deployed smart contract
+		if err != nil {
+			return err
+		}
+		fmt.Println("/agreements")
+		return c.JSON(http.StatusOK, reply)
+	}),
+	)
 
 	e.POST("/credit", __middleware.ValidateJWT(__CreditUsecase.InsertCredit))
 	e.GET("/credits", __middleware.ValidateJWT(__CreditUsecase.GetCredits))
