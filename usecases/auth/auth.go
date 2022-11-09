@@ -52,7 +52,8 @@ func Login(c echo.Context) error {
 		})
 	}
 	return c.JSON(http.StatusOK, map[string]interface{}{
-		"token": tokenString,
+		"token":      tokenString,
+		"permission": userQuery.Role,
 	})
 }
 

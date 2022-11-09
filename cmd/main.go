@@ -39,7 +39,7 @@ func main() {
 	}
 
 	// create auth and transaction package for deploying smart contract
-	approverContractAuth := getAccountAuth(client, "8697fa9dac0c9dd063af41430f5eb38150a879764f9332dceaa3ba08694b6925")
+	approverContractAuth := getAccountAuth(client, "707f9140265ae2467d77f908aa501195d1f816def00100c5dceaae4133097840")
 
 	//deploying smart contract
 	deployedApproverContract, _, _, err := __approverContract.DeployApi(approverContractAuth, client, "31d6cfe0d16ae931b73c59d7e0c089c0", "032f75b3ca02a393196a818328bd32e8") //api is redirected from api directory from our contract go file
@@ -66,7 +66,7 @@ func main() {
 	// }
 
 	// create auth and transaction package for deploying smart contract
-	agreementContractAuth := getAccountAuth(client, "6e8be54bf39503668207834fa023feadfa2bbaf094cd36183ab5241b885232a8")
+	agreementContractAuth := getAccountAuth(client, "16e11d70f301a1fa7594e9b5e9c8496f41b34b3bad0762720ea360bcdb979b89")
 
 	//deploying smart contract
 	deployedAgreementContract, _, _, err := __agreementContract.DeployApi(agreementContractAuth, client, "31d6cfe0d16ae931b73c59d7e0c089c0") //api is redirected from api directory from our contract go file
@@ -75,7 +75,7 @@ func main() {
 	}
 
 	// create auth and transaction package for deploying smart contract
-	creditContractAuth := getAccountAuth(client, "fc73147da3404c85f3324e488de8d964377e5b5ef60992d0fb1538790c73c735")
+	creditContractAuth := getAccountAuth(client, "e7085bed4fc19d2729d839f259b06c02a203f686e2c8044aaa77104f20ecb58b")
 
 	//deploying smart contract
 	delpoyedCreditContract, _, _, err := __creditscoreContract.DeployApi(creditContractAuth, client) //api is redirected from api directory from our contract go file
@@ -84,7 +84,7 @@ func main() {
 	}
 
 	// create auth and transaction package for deploying smart contract
-	transactionContractAuth := getAccountAuth(client, "fc73147da3404c85f3324e488de8d964377e5b5ef60992d0fb1538790c73c735")
+	transactionContractAuth := getAccountAuth(client, "71723c973dfa7e0e73443705fe3c5cde3e53ee1e889c437ad4a06ab9b78031dc")
 
 	//deploying smart contract
 	deployedTransactionContract, _, _, err := __transactionsContract.DeployApi(transactionContractAuth, client) //api is redirected from api directory from our contract go file
@@ -264,23 +264,42 @@ func main() {
 			panic(err)
 		}
 
-		reply, err := connTransaction.SetMonitoring(transactionContractAuth, c.Param(":pondid"), __transactionsContract.TransactionContractMonitoring{
+		auth := getAccountAuth(client, "71723c973dfa7e0e73443705fe3c5cde3e53ee1e889c437ad4a06ab9b78031dc")
+
+		fmt.Println("Weight " + weight.String())
+		fmt.Println("Temperature #1" + temperature.String())
+		fmt.Println("Humidity #1" + humidity.String())
+
+		reply, err := connTransaction.SetMonitoring(auth, c.Param(":pondid"), __transactionsContract.TransactionContractMonitoring{
 			Timestamp:   time.Now().String(),
 			Weight:      weight,
 			Temperature: temperature,
 			Humidity:    humidity,
 		})
 
-		// usecase
-		// reply, err := connTransaction.Add(transactionContractAuth, v["nik"].(string), __creditscoreContract.CreditScoreContractCredit{
-		// 	CreditAmount: creditAmount,
-		// 	Status:       v["status"].(bool),
-		// }) // conn call the balance function of deployed smart contract
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+
+		fmt.Println("Testing #1")
+
+		fmt.Println("/agreements")
+		return c.JSON(http.StatusOK, reply)
+	}),
+	)
+
+	e.GET("/monitoring/pond/:pondid", __middleware.ValidateJWT(func(c echo.Context) error {
+
+		reply, err := connTransaction.GetMonitoring(&bind.CallOpts{}, c.Param(":pondid"))
+
 		if err != nil {
 			return err
 		}
-		fmt.Println("/agreements")
-		return c.JSON(http.StatusOK, reply)
+
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"data": reply,
+		})
 	}),
 	)
 
