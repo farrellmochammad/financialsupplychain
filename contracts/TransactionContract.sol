@@ -91,14 +91,14 @@ contract TransactionContract {
         return isApproved;
     }
 
-    function setMonitoring(string memory _nik,Monitoring memory _monitoring) public {
+    function setMonitoring(string memory _pondid,Monitoring memory _monitoring) public {
         require(msg.sender == owner);
-        require(getFunderApproverValidation(_nik));
-        pondMonitorings[_nik].push(_monitoring);
+        require(getFunderApproverValidation(_pondid));
+        pondMonitorings[_pondid].push(_monitoring);
     }
 
-    function getMonitoring(string memory _nik) public view returns (Monitoring[] memory){
-        return pondMonitorings[_nik];
+    function getMonitoring(string memory _pondid) public view returns (Monitoring[] memory){
+        return pondMonitorings[_pondid];
     }
 
     function setSpawning(string memory _nik,Spawning memory _spawning) public {

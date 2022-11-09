@@ -14,6 +14,7 @@ import (
 	__CreditUsecase "financingsupplychain/usecases/credit"
 	__ExperienceUsecase "financingsupplychain/usecases/experience"
 	__MonitoringUsecase "financingsupplychain/usecases/monitoring"
+	__PondUsecase "financingsupplychain/usecases/pond"
 	__SpawningUsecase "financingsupplychain/usecases/spawning"
 
 	__middleware "financingsupplychain/middleware"
@@ -235,6 +236,12 @@ func main() {
 	e.POST("/monitoring", __middleware.ValidateJWT(__MonitoringUsecase.InsertMonitoring))
 	e.GET("/monitorings", __middleware.ValidateJWT(__MonitoringUsecase.GetMonitorings))
 	e.GET("/monitoring/:fundid", __middleware.ValidateJWT(__MonitoringUsecase.GetMonitoring))
+
+	e.POST("/pond", __middleware.ValidateJWT(__PondUsecase.InsertPond))
+	e.GET("/ponds", __middleware.ValidateJWT(__PondUsecase.GetPonds))
+	e.GET("/pond_id/:pondid", __middleware.ValidateJWT(__PondUsecase.GetPond))
+	e.GET("/pond_nik/:nik", __middleware.ValidateJWT(__PondUsecase.GetPondByNik))
+
 	e.POST("/monitoring/pond/:pondid", __middleware.ValidateJWT(func(c echo.Context) error {
 		var v map[string]interface{}
 		err := json.NewDecoder(c.Request().Body).Decode(&v)
