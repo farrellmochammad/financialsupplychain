@@ -12,13 +12,13 @@ func InsertPond(pond *__models.Pond) {
 		panic(errDB)
 	}
 
-	records := `INSERT INTO pond(PondId, Nik, TotalSpawning, FishType) VALUES (?, ?, ?, ?)`
+	records := `INSERT INTO pond(PondId, FundId, TotalSpawning, FishType) VALUES (?, ?, ?, ?)`
 	query, err := db.Prepare(records)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	_, err = query.Exec(pond.PondId, pond.Nik, pond.TotalSpawning, pond.FishType)
+	_, err = query.Exec(pond.PondId, pond.FundId, pond.TotalSpawning, pond.FishType)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -42,7 +42,7 @@ func GetPonds() []__models.Pond {
 	var ponds []__models.Pond
 
 	for rows.Next() {
-		err = rows.Scan(&scanner.PondId, &scanner.Nik, &scanner.TotalSpawning, &scanner.FishType)
+		err = rows.Scan(&scanner.PondId, &scanner.FundId, &scanner.TotalSpawning, &scanner.FishType)
 
 		if err != nil {
 			panic(err)
@@ -74,7 +74,7 @@ func GetPond(pondid string) []__models.Pond {
 	var ponds []__models.Pond
 
 	for rows.Next() {
-		err = rows.Scan(&scanner.PondId, &scanner.Nik, &scanner.TotalSpawning, &scanner.FishType)
+		err = rows.Scan(&scanner.PondId, &scanner.FundId, &scanner.TotalSpawning, &scanner.FishType)
 
 		if err != nil {
 			panic(err)
@@ -93,7 +93,7 @@ func GetPond(pondid string) []__models.Pond {
 	return ponds
 }
 
-func GetPondByNIK(nik string) []__models.Pond {
+func GetPondByFundId(fundid string) []__models.Pond {
 	db, errDB := sql.Open("sqlite3", "./pond_db.db")
 	if errDB != nil {
 		panic(errDB)
@@ -108,13 +108,13 @@ func GetPondByNIK(nik string) []__models.Pond {
 	var ponds []__models.Pond
 
 	for rows.Next() {
-		err = rows.Scan(&scanner.PondId, &scanner.Nik, &scanner.TotalSpawning, &scanner.FishType)
+		err = rows.Scan(&scanner.PondId, &scanner.FundId, &scanner.TotalSpawning, &scanner.FishType)
 
 		if err != nil {
 			panic(err)
 		}
 
-		if nik == scanner.Nik {
+		if fundid == scanner.FundId {
 			ponds = append(ponds, scanner)
 		}
 

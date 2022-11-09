@@ -24,7 +24,7 @@ func main() {
 
 	pond_table := `CREATE TABLE pond (
 	    "PondId" TEXT NOT NULL PRIMARY KEY,
-		"Nik" TEXT NOT NULL,
+		"FundId" TEXT NOT NULL,
 	    "TotalSpawning" INTEGER,
 		"FishType" TEXT);`
 

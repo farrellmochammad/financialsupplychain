@@ -55,9 +55,9 @@ func GetPond(c echo.Context) error {
 
 func GetPondByNik(c echo.Context) error {
 
-	nik := c.Param("nik")
+	fundid := c.Param("fundid")
 
-	ponds := __repository.GetPondByNIK(nik)
+	ponds := __repository.GetPondByFundId(fundid)
 
 	if len(ponds) == 0 {
 		return c.JSON(http.StatusNotFound, map[string]interface{}{

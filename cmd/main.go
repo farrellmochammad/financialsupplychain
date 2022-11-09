@@ -240,7 +240,7 @@ func main() {
 	e.POST("/pond", __middleware.ValidateJWT(__PondUsecase.InsertPond))
 	e.GET("/ponds", __middleware.ValidateJWT(__PondUsecase.GetPonds))
 	e.GET("/pond_id/:pondid", __middleware.ValidateJWT(__PondUsecase.GetPond))
-	e.GET("/pond_nik/:nik", __middleware.ValidateJWT(__PondUsecase.GetPondByNik))
+	e.GET("/pond_fundid/:fundid", __middleware.ValidateJWT(__PondUsecase.GetPondByNik))
 
 	e.POST("/monitoring/pond/:pondid", __middleware.ValidateJWT(func(c echo.Context) error {
 		var v map[string]interface{}
