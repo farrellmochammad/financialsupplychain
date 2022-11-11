@@ -3,12 +3,14 @@ package repositories
 import (
 	"database/sql"
 	__creditContract "financingsupplychain/api/creditscorecontract"
+	__transactionContract "financingsupplychain/api/transactioncontract"
 	__interface "financingsupplychain/interfaces"
 	__models "financingsupplychain/models"
 	"fmt"
 	"log"
 	"math/big"
 	"sync"
+	"time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 )
@@ -78,6 +80,28 @@ func GetCurrentAverage() {
 
 	fmt.Println("Reply ", reply)
 
+}
+
+func InsertExperienceBlockChain(nik string) {
+	_, err := __interface.TransactionsContractInterface().SetApproverTransaction(__interface.GetTransactionContractAuth(), nik, __transactionContract.TransactionContractApproverTransaction{
+		Reviewer:  "a",
+		Status:    3,
+		Filepath:  "ac",
+		Timestamp: time.Now().String(),
+	}) // conn call the balance function of deployed smart contract
+	if err != nil {
+		panic(err)
+	}
+}
+
+func GetExperienceBlockchain(nik string) []__transactionContract.TransactionContractApproverTransaction {
+	reply, err := __interface.TransactionsContractInterface().GetApproverTransaction(&bind.CallOpts{}, nik) // conn call the balance function of deployed smart contract
+	// conn call the balance function of deployed smart contract
+	if err != nil {
+		panic(err)
+	}
+
+	return reply
 }
 
 func InsertExperience(experience *__models.Experience) {

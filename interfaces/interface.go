@@ -96,7 +96,7 @@ func GetCreditContractAuth() *bind.TransactOpts {
 func GetTransactionContractAuth() *bind.TransactOpts {
 	StartConnection()
 
-	return transactionContractAuth
+	return getAccountAuth(client, "71723c973dfa7e0e73443705fe3c5cde3e53ee1e889c437ad4a06ab9b78031dc")
 }
 
 func getAccountAuth(client *ethclient.Client, accountAddress string) *bind.TransactOpts {

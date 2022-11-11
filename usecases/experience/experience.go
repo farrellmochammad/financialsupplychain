@@ -37,7 +37,7 @@ func InsertExperience(c echo.Context) error {
 	average, _ := stats.Mean(spawnings)
 	__repository.AddSpawningAverage(int(average))
 	__repository.GetCurrentAverage()
-	__repository.InsertExperience(experience)
+	__repository.InsertExperienceBlockChain(experience.Nik)
 
 	return c.JSON(http.StatusAccepted, map[string]interface{}{
 		"Statys": "Insert Experience Success",
@@ -57,7 +57,7 @@ func GetExperience(c echo.Context) error {
 
 	nik := c.Param("nik")
 
-	experiences := __repository.GetExperience(nik)
+	experiences := __repository.GetExperienceBlockchain(nik)
 
 	if len(experiences) == 0 {
 		return c.JSON(http.StatusNotFound, map[string]interface{}{
