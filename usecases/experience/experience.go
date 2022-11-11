@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.com/montanaflynn/stats"
 
 	__model "financingsupplychain/models"
 	__repository "financingsupplychain/repositories"
@@ -18,10 +19,24 @@ func InsertExperience(c echo.Context) error {
 		})
 	}
 
-	__repository.NumOfPondsValidation(experience)
-	credits := __repository.GetCredit(experience.Nik)
+	if !__repository.NumOfPondsValidation(experience) {
+		return c.JSON(http.StatusAccepted, map[string]interface{}{
+			"Status": "Maaf jumlah kolam tidak sesuai dengan persyaratan",
+		})
+	}
 
-	__repository.CreditsHistoryValidation(credits)
+	credits := __repository.GetCredit(experience.Nik)
+	if !__repository.CreditsHistoryValidation(credits) {
+		return c.JSON(http.StatusAccepted, map[string]interface{}{
+			"Status": "Maaf hdata ditolak karena terdapat kredit macet",
+		})
+	}
+
+	spawnings := stats.LoadRawData(__repository.GetSpawningHistoryAmounts(experience.Nik))
+
+	average, _ := stats.Mean(spawnings)
+	__repository.AddSpawningAverage(int(average))
+	__repository.GetCurrentAverage()
 	__repository.InsertExperience(experience)
 
 	return c.JSON(http.StatusAccepted, map[string]interface{}{

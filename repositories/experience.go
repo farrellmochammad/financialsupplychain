@@ -5,6 +5,7 @@ import (
 	__creditContract "financingsupplychain/api/creditscorecontract"
 	__interface "financingsupplychain/interfaces"
 	__models "financingsupplychain/models"
+	"fmt"
 	"log"
 	"math/big"
 	"sync"
@@ -57,6 +58,25 @@ func CreditsHistoryValidation(credits []__models.Credit) bool {
 	}
 
 	return reply
+
+}
+
+func AddSpawningAverage(average int) {
+
+	_, err := __interface.CreditScoreContractInterface().AddSpawningAverage(__interface.GetCreditContractAuth(), big.NewInt(int64(average))) // conn call the balance function of deployed smart contract
+	if err != nil {
+		panic(err)
+	}
+
+}
+
+func GetCurrentAverage() {
+	reply, err := __interface.CreditScoreContractInterface().GetSpawningCurrentAverage(&bind.CallOpts{}) // conn call the balance function of deployed smart contract
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Reply ", reply)
 
 }
 

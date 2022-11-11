@@ -9,6 +9,7 @@ import (
 	__MonitoringUsecase "financingsupplychain/usecases/monitoring"
 	__PondUsecase "financingsupplychain/usecases/pond"
 	__SpawningUsecase "financingsupplychain/usecases/spawning"
+	__SpawningHistoryUsecase "financingsupplychain/usecases/spawning_history"
 
 	__middleware "financingsupplychain/middleware"
 
@@ -231,6 +232,10 @@ func main() {
 	e.POST("/credit", __middleware.ValidateJWT(__CreditUsecase.InsertCredit))
 	e.GET("/credits", __middleware.ValidateJWT(__CreditUsecase.GetCredits))
 	e.GET("/credit/:creditid", __middleware.ValidateJWT(__CreditUsecase.GetCredit))
+
+	e.POST("/spawning_history", __middleware.ValidateJWT(__SpawningHistoryUsecase.InsertSpawningHistory))
+	e.GET("/spawning_histories", __middleware.ValidateJWT(__SpawningHistoryUsecase.GetSpawningsHistories))
+	e.GET("/spawning_history/:nik", __middleware.ValidateJWT(__SpawningHistoryUsecase.GetSpawningHistory))
 
 	// e.POST("/monitoring/pond/:pondid", __middleware.ValidateJWT(func(c echo.Context) error {
 	// 	var v map[string]interface{}

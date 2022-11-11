@@ -26,6 +26,8 @@ var deployedCreditContract common.Address
 var deployedTransactionContract common.Address
 var connCredit *__creditscoreContract.Api
 var connTransaction *__transactionsContract.Api
+var creditContractAuth *bind.TransactOpts
+var transactionContractAuth *bind.TransactOpts
 var err error
 
 func StartConnection() *single {
@@ -40,7 +42,7 @@ func StartConnection() *single {
 			}
 
 			// create auth and transaction package for deploying smart contract
-			creditContractAuth := getAccountAuth(client, "e7085bed4fc19d2729d839f259b06c02a203f686e2c8044aaa77104f20ecb58b")
+			creditContractAuth = getAccountAuth(client, "e7085bed4fc19d2729d839f259b06c02a203f686e2c8044aaa77104f20ecb58b")
 
 			//deploying smart contract
 			deployedCreditContract, _, _, err = __creditscoreContract.DeployApi(creditContractAuth, client) //api is redirected from api directory from our contract go file
@@ -55,7 +57,7 @@ func StartConnection() *single {
 			}
 
 			// create auth and transaction package for deploying smart contract
-			transactionContractAuth := getAccountAuth(client, "71723c973dfa7e0e73443705fe3c5cde3e53ee1e889c437ad4a06ab9b78031dc")
+			transactionContractAuth = getAccountAuth(client, "71723c973dfa7e0e73443705fe3c5cde3e53ee1e889c437ad4a06ab9b78031dc")
 
 			//deploying smart contract
 			deployedTransactionContract, _, _, err = __transactionsContract.DeployApi(transactionContractAuth, client) //api is redirected from api directory from our contract go file
@@ -84,6 +86,17 @@ func TransactionsContractInterface() *__transactionsContract.Api {
 	StartConnection()
 
 	return connTransaction
+}
+
+func GetCreditContractAuth() *bind.TransactOpts {
+
+	return getAccountAuth(client, "e7085bed4fc19d2729d839f259b06c02a203f686e2c8044aaa77104f20ecb58b")
+}
+
+func GetTransactionContractAuth() *bind.TransactOpts {
+	StartConnection()
+
+	return transactionContractAuth
 }
 
 func getAccountAuth(client *ethclient.Client, accountAddress string) *bind.TransactOpts {
