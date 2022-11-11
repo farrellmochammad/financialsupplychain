@@ -45,10 +45,6 @@ func ValidateJWT(next echo.HandlerFunc) echo.HandlerFunc {
 			return c.JSON(401, map[string]interface{}{"status": "failed", "message": "Token expired, please login back"})
 		}
 
-		if valid.Claims.(jwt.MapClaims)["role"] != "approver" {
-			return c.JSON(401, map[string]interface{}{"status": "failed", "message": "User doesn't have permission"})
-		}
-
 		c.Set("username", valid.Claims.(jwt.MapClaims)["username"])
 		c.Set("role", valid.Claims.(jwt.MapClaims)["role"])
 

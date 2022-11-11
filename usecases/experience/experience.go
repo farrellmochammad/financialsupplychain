@@ -18,6 +18,10 @@ func InsertExperience(c echo.Context) error {
 		})
 	}
 
+	__repository.NumOfPondsValidation(experience)
+	credits := __repository.GetCredit(experience.Nik)
+
+	__repository.CreditsHistoryValidation(credits)
 	__repository.InsertExperience(experience)
 
 	return c.JSON(http.StatusAccepted, map[string]interface{}{

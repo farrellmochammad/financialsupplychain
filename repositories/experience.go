@@ -2,9 +2,63 @@ package repositories
 
 import (
 	"database/sql"
+	__creditContract "financingsupplychain/api/creditscorecontract"
+	__interface "financingsupplychain/interfaces"
 	__models "financingsupplychain/models"
 	"log"
+	"math/big"
+	"sync"
+
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 )
+
+var lock = &sync.Mutex{}
+
+type single struct {
+}
+
+var singleInstance *single
+
+func getInstance() *single {
+	if singleInstance == nil {
+		lock.Lock()
+		defer lock.Unlock()
+		if singleInstance == nil {
+			singleInstance = &single{}
+		}
+	}
+	return singleInstance
+}
+
+func NumOfPondsValidation(experience *__models.Experience) bool {
+	reply, err := __interface.CreditScoreContractInterface().PondValidation(&bind.CallOpts{}, big.NewInt(int64(experience.NumberOfPonds))) // conn call the balance function of deployed smart contract
+	if err != nil {
+		panic(err)
+	}
+
+	return reply
+
+}
+
+func CreditsHistoryValidation(credits []__models.Credit) bool {
+	var credits_object []__creditContract.CreditScoreContractCredit
+
+	for i := 0; i < len(credits); i++ {
+		credit := __creditContract.CreditScoreContractCredit{
+			CreditAmount: big.NewInt(int64(credits[i].CreditAmount)),
+			Status:       credits[i].Status,
+		}
+		credits_object = append(credits_object, credit)
+	}
+
+	reply, err := __interface.CreditScoreContractInterface().CreditValidation(&bind.CallOpts{}, credits_object) // conn call the balance function of deployed smart contract
+	if err != nil {
+		panic(err)
+	}
+
+	return reply
+
+}
 
 func InsertExperience(experience *__models.Experience) {
 	db, errDB := sql.Open("sqlite3", "./experience_db.db")

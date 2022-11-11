@@ -40,7 +40,7 @@ func GetCredit(c echo.Context) error {
 
 	credit := __repository.GetCredit(credit_id)
 
-	if (__model.Credit{}) == credit {
+	if len(credit) == 0 {
 		return c.JSON(http.StatusNotFound, map[string]interface{}{
 			"status": "Credit not found",
 		})
