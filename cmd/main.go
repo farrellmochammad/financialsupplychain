@@ -219,6 +219,7 @@ func main() {
 	e.POST("/experience", __middleware.ValidateJWT(__ExperienceUsecase.InsertExperience))
 	e.GET("/experiences", __middleware.ValidateJWT(__ExperienceUsecase.GetExperiences))
 	e.GET("/experience/:nik", __middleware.ValidateJWT(__ExperienceUsecase.GetExperience))
+	e.PUT("/uploadfile", __middleware.ValidateJWT(__ExperienceUsecase.UploadFile))
 
 	e.POST("/monitoring", __middleware.ValidateJWT(__MonitoringUsecase.InsertMonitoring))
 	e.GET("/monitorings", __middleware.ValidateJWT(__MonitoringUsecase.GetMonitorings))

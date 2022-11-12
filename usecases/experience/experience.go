@@ -58,6 +58,24 @@ func GetExperiences(c echo.Context) error {
 	})
 }
 
+func UploadFile(c echo.Context) error {
+
+	uploadfileurl := &__model.UploadFile{}
+	if err := c.Bind(&uploadfileurl); err != nil {
+		return c.JSON(http.StatusBadGateway, map[string]interface{}{
+			"message": "failed",
+			"err":     err,
+		})
+	}
+
+	__repository.UploadFile(uploadfileurl.FileUrl, uploadfileurl.Nik)
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"status": "success",
+	})
+
+}
+
 func GetExperience(c echo.Context) error {
 
 	nik := c.Param("nik")

@@ -12,3 +12,8 @@ type Experience struct {
 	Notes         string `json:"notes" form:"notes" query:"notes"`
 	CurrentStatus string `json:"current_status" form:"current_status" query:"current_status"`
 }
+
+type UploadFile struct {
+	Nik     string `json:"nik" form:"nik" query:"nik"`
+	FileUrl string `json:"file_url" form:"file_url" query:"file_url"`
+}

@@ -32,6 +32,8 @@ func main() {
 		"FishType" TEXT,
 		"NumberOfPonds" INTEGER,
 	    "Notes" TEXT,
+		"UrlFile" TEXT,
+		"FundId" TEXT,
 		"CurrentStatus" TEXT);`
 
 	query, err := db.Prepare(experience_table)

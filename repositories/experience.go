@@ -104,6 +104,24 @@ func GetExperienceBlockchain(nik string) []__transactionContract.TransactionCont
 	return reply
 }
 
+func UploadFile(fileurl string, nik string) {
+	db, errDB := sql.Open("sqlite3", "./experience_db.db")
+	if errDB != nil {
+		panic(errDB)
+	}
+
+	stmt, errStmt := db.Prepare("update experience set UrlFile=? where Nik=?")
+	if errStmt != nil {
+		panic(errDB)
+	}
+
+	_, err := stmt.Exec(fileurl, nik)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 func InsertExperience(experience *__models.Experience) {
 	db, errDB := sql.Open("sqlite3", "./experience_db.db")
 	if errDB != nil {
@@ -130,7 +148,7 @@ func GetExperiences() []__models.Experience {
 		panic(errDB)
 	}
 
-	rows, err := db.Query("SELECT * FROM experience")
+	rows, err := db.Query("SELECT Nik,Name,Phone,Dob,Address,StartFarming,FishType,NumberOfPonds,Notes,CurrentStatus FROM experience")
 	if err != nil {
 		panic(err)
 	}
@@ -163,7 +181,7 @@ func GetExperience(nik string) []__models.Experience {
 		panic(errDB)
 	}
 
-	rows, err := db.Query("SELECT * FROM experience")
+	rows, err := db.Query("select Nik,Name,Phone,Dob,Address,StartFarming,FishType,NumberOfPonds,Notes,CurrentStatus FROM experience")
 	if err != nil {
 		panic(err)
 	}
