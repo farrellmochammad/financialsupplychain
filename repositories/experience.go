@@ -6,7 +6,6 @@ import (
 	__transactionContract "financingsupplychain/api/transactioncontract"
 	__interface "financingsupplychain/interfaces"
 	__models "financingsupplychain/models"
-	"fmt"
 	"log"
 	"math/big"
 	"sync"
@@ -72,22 +71,23 @@ func AddSpawningAverage(average int) {
 
 }
 
-func GetCurrentAverage() {
+func GetCurrentAverage() *big.Int {
 	reply, err := __interface.CreditScoreContractInterface().GetSpawningCurrentAverage(&bind.CallOpts{}) // conn call the balance function of deployed smart contract
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println("Reply ", reply)
-
+	return reply
 }
 
-func InsertExperienceBlockChain(nik string) {
+func InsertExperienceBlockChain(username string, nik string, numofponds int, spawningaverage int, creditscore *big.Int) {
 	_, err := __interface.TransactionsContractInterface().SetApproverTransaction(__interface.GetTransactionContractAuth(), nik, __transactionContract.TransactionContractApproverTransaction{
-		Reviewer:  "a",
-		Status:    3,
-		Filepath:  "ac",
-		Timestamp: time.Now().String(),
+		Submitby:        username,
+		Status:          "Approved",
+		Timestamp:       time.Now().String(),
+		Numofponds:      big.NewInt(int64(numofponds)),
+		Spawningaverage: big.NewInt(int64(spawningaverage)),
+		Creditscore:     creditscore,
 	}) // conn call the balance function of deployed smart contract
 	if err != nil {
 		panic(err)

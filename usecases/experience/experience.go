@@ -1,6 +1,7 @@
 package experience
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -36,8 +37,12 @@ func InsertExperience(c echo.Context) error {
 
 	average, _ := stats.Mean(spawnings)
 	__repository.AddSpawningAverage(int(average))
-	__repository.GetCurrentAverage()
-	__repository.InsertExperienceBlockChain(experience.Nik)
+
+	//need to improve
+	creditscore := __repository.GetCurrentAverage()
+	__repository.InsertExperienceBlockChain(fmt.Sprintf("%v", c.Get("username")), experience.Nik, experience.NumberOfPonds, int(average), creditscore)
+
+	__repository.InsertExperience(experience)
 
 	return c.JSON(http.StatusAccepted, map[string]interface{}{
 		"Statys": "Insert Experience Success",
