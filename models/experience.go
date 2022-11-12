@@ -11,6 +11,7 @@ type Experience struct {
 	NumberOfPonds int    `json:"number_of_ponds" form:"number_of_ponds" query:"number_of_ponds"`
 	Notes         string `json:"notes" form:"notes" query:"notes"`
 	CurrentStatus string `json:"current_status" form:"current_status" query:"current_status"`
+	UrlFile       string `json:"url_file" form:"url_file" query:"url_file"`
 }
 
 type UploadFile struct {
