@@ -150,7 +150,7 @@ func GetExperiences() []__models.Experience {
 		panic(errDB)
 	}
 
-	rows, err := db.Query("SELECT Nik,Name,Phone,Dob,Address,StartFarming,FishType,NumberOfPonds,Notes,CurrentStatus,UrlFile FROM experience")
+	rows, err := db.Query("SELECT Nik,Name,Phone,Dob,Address,StartFarming,FishType,NumberOfPonds,Notes,CurrentStatus FROM experience")
 	if err != nil {
 		panic(err)
 	}
@@ -160,7 +160,7 @@ func GetExperiences() []__models.Experience {
 	var experiences []__models.Experience
 
 	for rows.Next() {
-		err = rows.Scan(&scanner.Nik, &scanner.Name, &scanner.Phone, &scanner.Dob, &scanner.Address, &scanner.StartFarming, &scanner.FishType, &scanner.NumberOfPonds, &scanner.Notes, &scanner.CurrentStatus, &scanner.UrlFile)
+		err = rows.Scan(&scanner.Nik, &scanner.Name, &scanner.Phone, &scanner.Dob, &scanner.Address, &scanner.StartFarming, &scanner.FishType, &scanner.NumberOfPonds, &scanner.Notes, &scanner.CurrentStatus)
 
 		if err != nil {
 			panic(err)

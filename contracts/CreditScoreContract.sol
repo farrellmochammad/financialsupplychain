@@ -82,8 +82,8 @@ contract CreditScoreContract {
         return isFeasible;
     }
 
-    function pondValidation(Pond[] memory _ponds) public pure returns (bool){
-        if (_ponds.length < 2) {
+    function pondValidation(uint _pondlength) public pure returns (bool){
+        if (_pondlength < 2) {
             return false;
         } else {
             return true;
