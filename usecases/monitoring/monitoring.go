@@ -1,7 +1,6 @@
 package monitoring
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -11,7 +10,6 @@ import (
 )
 
 func InsertMonitoring(c echo.Context) error {
-	fmt.Println("Insert monitoring")
 	monitoring := new(__model.Monitoring)
 	if err := c.Bind(&monitoring); err != nil {
 		return c.JSON(http.StatusBadGateway, map[string]interface{}{
@@ -44,6 +42,39 @@ func GetMonitoring(c echo.Context) error {
 	if len(monitorings) == 0 {
 		return c.JSON(http.StatusNotFound, map[string]interface{}{
 			"status": "monitoring data not found",
+		})
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"data": monitorings,
+	})
+
+}
+
+func InsertMonitoringBlockChain(c echo.Context) error {
+	monitoring := new(__model.MonitoringPond)
+	if err := c.Bind(&monitoring); err != nil {
+		return c.JSON(http.StatusBadGateway, map[string]interface{}{
+			"message": "failed",
+		})
+	}
+
+	__repository.InsertMonitoringPondBlockChain(monitoring.FundId, monitoring)
+
+	return c.JSON(http.StatusAccepted, map[string]interface{}{
+		"Statys": "Insert Monitoring Success",
+	})
+}
+
+func GetMonitoringBlockChain(c echo.Context) error {
+
+	fundid := c.Param("fundid")
+
+	monitorings := __repository.GetMonitoringBlockChain(fundid)
+
+	if len(monitorings) == 0 {
+		return c.JSON(http.StatusNotFound, map[string]interface{}{
+			"status": "Monitoring not found",
 		})
 	}
 

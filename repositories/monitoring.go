@@ -2,9 +2,40 @@ package repositories
 
 import (
 	"database/sql"
+	__transactionContract "financingsupplychain/api/transactioncontract"
+	__interface "financingsupplychain/interfaces"
 	__models "financingsupplychain/models"
+	"fmt"
 	"log"
+	"math/big"
+	"time"
+
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 )
+
+func InsertMonitoringPondBlockChain(fundid string, monitoring *__models.MonitoringPond) {
+	fmt.Println("Fund Id : ", fundid)
+	_, err := __interface.TransactionsContractInterface().SetMonitoring(__interface.GetTransactionContractAuth(), fundid, __transactionContract.TransactionContractMonitoring{
+		Timestamp:   time.Now().String(),
+		Weight:      big.NewInt(int64(monitoring.Weight)),
+		Temperature: big.NewInt(int64(monitoring.Temperature)),
+		Humidity:    big.NewInt(int64(monitoring.Humidity)),
+	}) // conn call the balance function of deployed smart contract
+	if err != nil {
+		panic(err)
+	}
+}
+
+func GetMonitoringBlockChain(fundid string) []__transactionContract.TransactionContractMonitoring {
+	fmt.Println("Fund Id  2: ", fundid)
+	reply, err := __interface.TransactionsContractInterface().GetMonitoring(&bind.CallOpts{}, fundid) // conn call the balance function of deployed smart contract
+	// conn call the balance function of deployed smart contract
+	if err != nil {
+		panic(err)
+	}
+
+	return reply
+}
 
 func InsertMonitoring(monitoring *__models.Monitoring) {
 	db, errDB := sql.Open("sqlite3", "./monitoring_db.db")

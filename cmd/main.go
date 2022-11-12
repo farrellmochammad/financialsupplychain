@@ -45,6 +45,9 @@ func main() {
 	e.GET("/monitorings", __middleware.ValidateJWT(__MonitoringUsecase.GetMonitorings))
 	e.GET("/monitoring/:nik", __middleware.ValidateJWT(__MonitoringUsecase.GetMonitoring))
 
+	e.POST("/monitoring_pond", __middleware.ValidateJWT(__MonitoringUsecase.InsertMonitoringBlockChain))
+	e.GET("/monitoring_pond/:fundid", __middleware.ValidateJWT(__MonitoringUsecase.GetMonitoringBlockChain))
+
 	e.POST("/pond", __middleware.ValidateJWT(__PondUsecase.InsertPond))
 	e.GET("/ponds", __middleware.ValidateJWT(__PondUsecase.GetPonds))
 	e.GET("/pond_id/:pondid", __middleware.ValidateJWT(__PondUsecase.GetPond))
