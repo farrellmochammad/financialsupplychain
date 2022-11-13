@@ -43,6 +43,10 @@ func NumOfPondsValidation(experience *__models.Experience) bool {
 }
 
 func CreditsHistoryValidation(credits []__models.Credit) bool {
+	if len(credits) == 0 {
+		return true
+	}
+
 	var credits_object []__creditContract.CreditScoreContractCredit
 
 	for i := 0; i < len(credits); i++ {

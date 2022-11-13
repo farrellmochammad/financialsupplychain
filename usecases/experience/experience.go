@@ -21,14 +21,14 @@ func InsertExperience(c echo.Context) error {
 	}
 
 	if !__repository.NumOfPondsValidation(experience) {
-		return c.JSON(http.StatusAccepted, map[string]interface{}{
+		return c.JSON(http.StatusNotAcceptable, map[string]interface{}{
 			"Status": "Maaf jumlah kolam tidak sesuai dengan persyaratan",
 		})
 	}
 
 	credits := __repository.GetCredit(experience.Nik)
 	if !__repository.CreditsHistoryValidation(credits) {
-		return c.JSON(http.StatusAccepted, map[string]interface{}{
+		return c.JSON(http.StatusNotAcceptable, map[string]interface{}{
 			"Status": "Maaf hdata ditolak karena terdapat kredit macet",
 		})
 	}
