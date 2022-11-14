@@ -61,5 +61,5 @@ func main() {
 	e.GET("/spawning_histories", __middleware.ValidateJWT(__SpawningHistoryUsecase.GetSpawningsHistories))
 	e.GET("/spawning_history/:nik", __middleware.ValidateJWT(__SpawningHistoryUsecase.GetSpawningHistory))
 
-	e.Logger.Fatal(e.Start("127.0.0.1:2021"))
+	e.Logger.Fatal(e.Start("0.0.0.0:2021"))
 }
