@@ -22,6 +22,6 @@ func InsertCredit(c echo.Context, creditcontract *__creditscorecontract.Api) err
 	__repository.InsertCredit(credit)
 
 	return c.JSON(http.StatusAccepted, map[string]interface{}{
-		"Statys": "Insert Credit Success",
+		"status": "Insert Credit Success",
 	})
 }

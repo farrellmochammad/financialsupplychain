@@ -22,7 +22,7 @@ func InsertPond(c echo.Context) error {
 	__repository.InsertPond(pond)
 
 	return c.JSON(http.StatusAccepted, map[string]interface{}{
-		"Statys": "Insert Pond Success",
+		"status": "Insert Pond Success",
 	})
 }
 

@@ -20,7 +20,7 @@ func InsertMonitoring(c echo.Context) error {
 	__repository.InsertMonitoring(monitoring)
 
 	return c.JSON(http.StatusAccepted, map[string]interface{}{
-		"Statys": "Insert Monitoring Success",
+		"status": "Insert Monitoring Success",
 	})
 }
 
@@ -62,7 +62,7 @@ func InsertMonitoringBlockChain(c echo.Context) error {
 	__repository.InsertMonitoringPondBlockChain(monitoring.FundId, monitoring)
 
 	return c.JSON(http.StatusAccepted, map[string]interface{}{
-		"Statys": "Insert Monitoring Success",
+		"status": "Insert Monitoring Success",
 	})
 }
 

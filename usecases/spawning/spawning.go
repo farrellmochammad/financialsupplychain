@@ -21,7 +21,7 @@ func InsertSpawning(c echo.Context) error {
 	__repository.InserSpawning(spawning)
 
 	return c.JSON(http.StatusAccepted, map[string]interface{}{
-		"Statys": "Insert Spawning Success",
+		"status": "Insert Spawning Success",
 	})
 }
 

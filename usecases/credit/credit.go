@@ -21,7 +21,7 @@ func InsertCredit(c echo.Context) error {
 	__repository.InsertCredit(credit)
 
 	return c.JSON(http.StatusAccepted, map[string]interface{}{
-		"Statys": "Insert Credit Success",
+		"status": "Insert Credit Success",
 	})
 }
 

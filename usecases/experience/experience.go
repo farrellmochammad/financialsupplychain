@@ -45,7 +45,7 @@ func InsertExperience(c echo.Context) error {
 	__repository.InsertExperience(experience)
 
 	return c.JSON(http.StatusAccepted, map[string]interface{}{
-		"Statys": "Insert Experience Success",
+		"status": "Insert Experience Success",
 	})
 }
 

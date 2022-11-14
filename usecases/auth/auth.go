@@ -70,7 +70,7 @@ func Register(c echo.Context) error {
 	__repository.InsertUsers(user)
 
 	return c.JSON(http.StatusAccepted, map[string]interface{}{
-		"Statys": "Register Success",
+		"status": "Register Success",
 	})
 }
 
@@ -78,6 +78,6 @@ func OnlyTest(c echo.Context) error {
 	fmt.Println("only test", c.Get("username"))
 	fmt.Println("only test", c.Get("role"))
 	return c.JSON(http.StatusAccepted, map[string]interface{}{
-		"Statys": "Login Success",
+		"status": "Login Success",
 	})
 }

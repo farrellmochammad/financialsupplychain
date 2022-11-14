@@ -42,7 +42,7 @@ func InsertFunderBlockChain(c echo.Context) error {
 	__repository.InsertFunder(funder)
 
 	return c.JSON(http.StatusAccepted, map[string]interface{}{
-		"Statys": "Insert Funder Success",
+		"status": "Insert Funder Success",
 	})
 }
 
