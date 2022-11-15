@@ -140,7 +140,7 @@ func InsertExperience(experience *__models.Experience) {
 		log.Fatal(err)
 	}
 
-	_, err = query.Exec(experience.Nik, experience.Name, experience.Phone, experience.Dob, experience.Address, experience.StartFarming, experience.FishType, experience.NumberOfPonds, experience.Notes, "Draft")
+	_, err = query.Exec(experience.Nik, experience.Name, experience.Phone, experience.Dob, experience.Address, experience.StartFarming, experience.FishType, experience.NumberOfPonds, experience.Notes, "Approved")
 	if err != nil {
 		log.Fatal(err)
 	}
