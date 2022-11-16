@@ -9,6 +9,7 @@ contract TransactionContract {
 
 
     struct ApproverTransaction {
+        string nik;
         string submitby;
         string status;
         string timestamp;
@@ -38,7 +39,8 @@ contract TransactionContract {
         uint weight;
     }
 
-    mapping(string => ApproverTransaction[]) public approverTransactions;
+    ApproverTransaction[] public approverTransactions;
+
     mapping(string => FunderApproverTransaction[]) public funderApproverTransactions;
     mapping(string => Monitoring[]) public pondMonitorings;
     mapping(string => Spawning[]) public spawningHistory;
@@ -48,13 +50,13 @@ contract TransactionContract {
         owner = msg.sender; // 'msg.sender' is sender of  current call, contract deployer for a constructo
     }
 
-    function setApproverTransaction(string memory _nik,ApproverTransaction memory _approvertransaction) public {
+    function setApproverTransaction(ApproverTransaction memory _approvertransaction) public {
         require(msg.sender == owner);
-        approverTransactions[_nik].push(_approvertransaction);
+        approverTransactions.push(_approvertransaction);
     }
 
-    function getApproverTransaction(string memory _nik) public view returns (ApproverTransaction[] memory){
-        return approverTransactions[_nik];
+    function getApproverTransaction() public view returns (ApproverTransaction[] memory){
+        return approverTransactions;
     }
 
 
