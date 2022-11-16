@@ -85,8 +85,9 @@ func GetCurrentAverage() *big.Int {
 }
 
 func InsertExperienceBlockChain(username string, nik string, numofponds int, spawningaverage int, creditscore *big.Int) {
-	_, err := __interface.TransactionsContractInterface().SetApproverTransaction(__interface.GetTransactionContractAuth(), nik, __transactionContract.TransactionContractApproverTransaction{
+	_, err := __interface.TransactionsContractInterface().SetApproverTransaction(__interface.GetTransactionContractAuth(), __transactionContract.TransactionContractApproverTransaction{
 		Submitby:        username,
+		Nik:             nik,
 		Status:          "Approved",
 		Timestamp:       time.Now().String(),
 		Numofponds:      big.NewInt(int64(numofponds)),
@@ -98,14 +99,21 @@ func InsertExperienceBlockChain(username string, nik string, numofponds int, spa
 	}
 }
 
-func GetExperienceBlockchain(nik string) []__transactionContract.TransactionContractApproverTransaction {
-	reply, err := __interface.TransactionsContractInterface().GetApproverTransaction(&bind.CallOpts{}, nik) // conn call the balance function of deployed smart contract
+func GetExperienceBlockchain(nik string, username string) []__transactionContract.TransactionContractApproverTransaction {
+	reply, err := __interface.TransactionsContractInterface().GetApproverTransaction(&bind.CallOpts{}) // conn call the balance function of deployed smart contract
 	// conn call the balance function of deployed smart contract
 	if err != nil {
 		panic(err)
 	}
 
-	return reply
+	var approverTransaction []__transactionContract.TransactionContractApproverTransaction
+	for _, approvertransaction := range reply {
+		if approvertransaction.Nik == nik {
+			approverTransaction = append(approverTransaction, approvertransaction)
+		}
+	}
+
+	return approverTransaction
 }
 
 func UploadFile(fileurl string, nik string) {

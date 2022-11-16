@@ -79,8 +79,9 @@ func UploadFile(c echo.Context) error {
 func GetExperience(c echo.Context) error {
 
 	nik := c.Param("nik")
+	username := fmt.Sprintf("%v", c.Get("username"))
 
-	experiences := __repository.GetExperienceBlockchain(nik)
+	experiences := __repository.GetExperienceBlockchain(nik, username)
 
 	if len(experiences) == 0 {
 		return c.JSON(http.StatusNotFound, map[string]interface{}{
