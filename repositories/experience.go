@@ -156,6 +156,26 @@ func InsertExperience(experience *__models.Experience) {
 	defer db.Close()
 }
 
+func UpdateExperience(experience *__models.Experience) {
+	db, errDB := sql.Open("sqlite3", "./experience_db.db")
+	if errDB != nil {
+		panic(errDB)
+	}
+
+	records := `update experience set Name = ?, Phone = ? , Dob = ?, Address = ? , StartFarming = ?, FishType = ? , NumberOfPonds = ?, Notes = ? where Nik = ? `
+	query, err := db.Prepare(records)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = query.Exec(experience.Name, experience.Phone, experience.Dob, experience.Address, experience.StartFarming, experience.FishType, experience.NumberOfPonds, experience.Notes, experience.Nik)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer db.Close()
+}
+
 func GetExperiences() []__models.Experience {
 	db, errDB := sql.Open("sqlite3", "./experience_db.db")
 	if errDB != nil {

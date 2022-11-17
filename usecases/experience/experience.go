@@ -49,6 +49,22 @@ func InsertExperience(c echo.Context) error {
 	})
 }
 
+func UpdateExperience(c echo.Context) error {
+
+	experience := new(__model.Experience)
+	if err := c.Bind(&experience); err != nil {
+		return c.JSON(http.StatusBadGateway, map[string]interface{}{
+			"message": "failed",
+		})
+	}
+
+	__repository.UpdateExperience(experience)
+
+	return c.JSON(http.StatusAccepted, map[string]interface{}{
+		"status": "Update Experience Success",
+	})
+}
+
 func GetExperiences(c echo.Context) error {
 
 	experiences := __repository.GetExperiences()
