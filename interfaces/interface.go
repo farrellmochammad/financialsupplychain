@@ -36,7 +36,7 @@ func StartConnection() *single {
 		defer lock.Unlock()
 		if singleInstance == nil {
 			singleInstance = &single{}
-			client, err = ethclient.Dial("http://172.17.224.1:7545")
+			client, err = ethclient.Dial("http://172.26.96.1:7545")
 			if err != nil {
 				panic(err)
 			}

@@ -1,7 +1,7 @@
 package main
 
 import (
-	__interface "financingsupplychain/interfaces"
+	// __interface "financingsupplychain/interfaces"
 
 	__authUsecase "financingsupplychain/usecases/auth"
 	__CreditUsecase "financingsupplychain/usecases/credit"
@@ -9,6 +9,7 @@ import (
 	__FunderUsecase "financingsupplychain/usecases/funder"
 	__MonitoringUsecase "financingsupplychain/usecases/monitoring"
 	__PondUsecase "financingsupplychain/usecases/pond"
+	__SignUsecase "financingsupplychain/usecases/sign"
 	__SpawningUsecase "financingsupplychain/usecases/spawning"
 	__SpawningHistoryUsecase "financingsupplychain/usecases/spawning_history"
 
@@ -19,7 +20,8 @@ import (
 )
 
 func main() {
-	__interface.StartConnection()
+
+	// __interface.StartConnection()
 
 	e := echo.New()
 
@@ -27,12 +29,13 @@ func main() {
 
 	e.POST("/login", __middleware.GenerateJWT(__authUsecase.Login))
 	e.POST("/register", __authUsecase.Register)
-	e.GET("/Testjwt", __middleware.ValidateJWT(__authUsecase.OnlyTest))
+
 	e.POST("/spawning", __middleware.ValidateJWT(__SpawningUsecase.InsertSpawning))
 	e.GET("/spawnings", __middleware.ValidateJWT(__SpawningUsecase.GetSpawnings))
 	e.GET("/spawning/:spawningid", __middleware.ValidateJWT(__SpawningUsecase.GetSpawning))
 
 	e.POST("/experience", __middleware.ValidateJWT(__ExperienceUsecase.InsertExperience))
+	e.PUT("/experience", __middleware.ValidateJWT(__ExperienceUsecase.UpdateExperience))
 	e.GET("/experiences", __middleware.ValidateJWT(__ExperienceUsecase.GetExperiences))
 	e.GET("/experience/:nik", __middleware.ValidateJWT(__ExperienceUsecase.GetExperience))
 	e.PUT("/uploadfile", __middleware.ValidateJWT(__ExperienceUsecase.UploadFile))
@@ -52,6 +55,14 @@ func main() {
 	e.GET("/ponds", __middleware.ValidateJWT(__PondUsecase.GetPonds))
 	e.GET("/pond_id/:pondid", __middleware.ValidateJWT(__PondUsecase.GetPond))
 	e.GET("/pond_fundid/:fundid", __middleware.ValidateJWT(__PondUsecase.GetPondByNik))
+
+	e.POST("/sign", __middleware.ValidateJWT(__SignUsecase.InsertSigned))
+	e.GET("/signs", __middleware.ValidateJWT(__SignUsecase.GetSigns))
+	e.GET("/sign/:signid", __middleware.ValidateJWT(__SignUsecase.GetSign))
+
+	e.POST("/sign", __middleware.ValidateJWT(__PondUsecase.InsertPond))
+	e.GET("/ponds", __middleware.ValidateJWT(__PondUsecase.GetPonds))
+	e.GET("/pond_id/:signid", __middleware.ValidateJWT(__PondUsecase.GetPond))
 
 	e.POST("/credit", __middleware.ValidateJWT(__CreditUsecase.InsertCredit))
 	e.GET("/credits", __middleware.ValidateJWT(__CreditUsecase.GetCredits))
