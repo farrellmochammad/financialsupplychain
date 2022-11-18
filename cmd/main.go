@@ -60,10 +60,6 @@ func main() {
 	e.GET("/signs", __middleware.ValidateJWT(__SignUsecase.GetSigns))
 	e.GET("/sign/:signid", __middleware.ValidateJWT(__SignUsecase.GetSign))
 
-	e.POST("/sign", __middleware.ValidateJWT(__PondUsecase.InsertPond))
-	e.GET("/ponds", __middleware.ValidateJWT(__PondUsecase.GetPonds))
-	e.GET("/pond_id/:signid", __middleware.ValidateJWT(__PondUsecase.GetPond))
-
 	e.POST("/credit", __middleware.ValidateJWT(__CreditUsecase.InsertCredit))
 	e.GET("/credits", __middleware.ValidateJWT(__CreditUsecase.GetCredits))
 	e.GET("/credit/:creditid", __middleware.ValidateJWT(__CreditUsecase.GetCredit))

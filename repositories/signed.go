@@ -17,8 +17,7 @@ func InsertSigned(sign *__models.Signed) {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	_, err = query.Exec(sign.SignId, sign.FundId, sign.SignUrl)
+	_, err = query.Exec(NewSHA1Hash(), sign.FundId, sign.SignUrl)
 	if err != nil {
 		log.Fatal(err)
 	}

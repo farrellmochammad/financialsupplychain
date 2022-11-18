@@ -23,7 +23,7 @@ func main() {
 	}
 
 	signed_table := `CREATE TABLE signed (
-		"SignedId" TEXT NOT NULL PRIMARY KEY,
+		"SignId" TEXT NOT NULL PRIMARY KEY,
 		"FundId" TEXT NOT NULL,
 		"SignUrl" TEXT);`
 
