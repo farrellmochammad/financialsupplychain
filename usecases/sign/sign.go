@@ -5,6 +5,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 
+	"financingsupplychain/models"
 	__model "financingsupplychain/models"
 	__repository "financingsupplychain/repositories"
 )
@@ -35,18 +36,18 @@ func GetSigns(c echo.Context) error {
 
 func GetSign(c echo.Context) error {
 
-	signid := c.Param("signid")
+	fundid := c.Param("fundid")
 
-	signs := __repository.GetSign(signid)
+	sign := __repository.GetSign(fundid)
 
-	if len(signs) == 0 {
+	if (models.Signed{} == sign) {
 		return c.JSON(http.StatusNotFound, map[string]interface{}{
 			"status": "sign data not found",
 		})
 	}
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
-		"data": signs,
+		"data": sign,
 	})
 
 }

@@ -58,7 +58,7 @@ func main() {
 
 	e.POST("/sign", __middleware.ValidateJWT(__SignUsecase.InsertSigned))
 	e.GET("/signs", __middleware.ValidateJWT(__SignUsecase.GetSigns))
-	e.GET("/sign/:signid", __middleware.ValidateJWT(__SignUsecase.GetSign))
+	e.GET("/sign/:fundid", __middleware.ValidateJWT(__SignUsecase.GetSign))
 
 	e.POST("/credit", __middleware.ValidateJWT(__CreditUsecase.InsertCredit))
 	e.GET("/credits", __middleware.ValidateJWT(__CreditUsecase.GetCredits))

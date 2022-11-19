@@ -58,7 +58,7 @@ func GetSigns() []__models.Signed {
 	return signs
 }
 
-func GetSign(signid string) []__models.Signed {
+func GetSign(fundid string) __models.Signed {
 	db, errDB := sql.Open("sqlite3", "./signed_db.db")
 	if errDB != nil {
 		panic(errDB)
@@ -70,7 +70,6 @@ func GetSign(signid string) []__models.Signed {
 	}
 
 	var scanner __models.Signed
-	var signs []__models.Signed
 
 	for rows.Next() {
 		err = rows.Scan(&scanner.SignId, &scanner.FundId, &scanner.SignUrl)
@@ -79,8 +78,8 @@ func GetSign(signid string) []__models.Signed {
 			panic(err)
 		}
 
-		if signid == scanner.SignId {
-			signs = append(signs, scanner)
+		if fundid == scanner.FundId {
+			return scanner
 		}
 
 	}
@@ -89,5 +88,5 @@ func GetSign(signid string) []__models.Signed {
 
 	defer db.Close()
 
-	return signs
+	return __models.Signed{}
 }
