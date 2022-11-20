@@ -20,6 +20,7 @@ contract TransactionContract {
 
     struct FunderApproverTransaction {
         string fundid;
+        string nik;
         string funder;
         string timestamp;
         uint numberofponds;
@@ -40,8 +41,7 @@ contract TransactionContract {
     }
 
     ApproverTransaction[] public approverTransactions;
-
-    mapping(string => FunderApproverTransaction[]) public funderApproverTransactions;
+    FunderApproverTransaction[] public funderApproverTransactions;
     mapping(string => Monitoring[]) public pondMonitorings;
     mapping(string => Spawning[]) public spawningHistory;
 
@@ -60,31 +60,31 @@ contract TransactionContract {
     }
 
 
-    function setFunderApproverTransaction(string memory _nik,FunderApproverTransaction memory _funderapprovertransaction) public {
+    function setFunderApproverTransaction(FunderApproverTransaction memory _funderapprovertransaction) public {
         require(msg.sender == owner);
-        funderApproverTransactions[_nik].push(_funderapprovertransaction);
+        funderApproverTransactions.push(_funderapprovertransaction);
     }
 
-    function getFunderApproverTransaction(string memory _nik) public view returns (FunderApproverTransaction[] memory){
-        return funderApproverTransactions[_nik];
+    function getFunderApproverTransaction() public view returns (FunderApproverTransaction[] memory){
+        return funderApproverTransactions;
     }
 
-    function setMonitoring(string memory _pondid,Monitoring memory _monitoring) public {
+    function setMonitoring(string memory _fundid,Monitoring memory _monitoring) public {
         require(msg.sender == owner);
-        pondMonitorings[_pondid].push(_monitoring);
+        pondMonitorings[_fundid].push(_monitoring);
     }
 
-    function getMonitoring(string memory _pondid) public view returns (Monitoring[] memory){
-        return pondMonitorings[_pondid];
+    function getMonitoring(string memory _fundid) public view returns (Monitoring[] memory){
+        return pondMonitorings[_fundid];
     }
 
-    function setSpawning(string memory _nik,Spawning memory _spawning) public {
+    function setSpawning(string memory _fundid,Spawning memory _spawning) public {
         require(msg.sender == owner);
-        spawningHistory[_nik].push(_spawning);
+        spawningHistory[_fundid].push(_spawning);
     }
 
-    function getSpawning(string memory _nik) public view returns (Spawning[] memory){
-        return spawningHistory[_nik];
+    function getSpawning(string memory _fundid) public view returns (Spawning[] memory){
+        return spawningHistory[_fundid];
     }
    
 }
