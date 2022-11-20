@@ -33,8 +33,9 @@ func getFunderInstance() *fundersingleton {
 }
 
 func InsertFundingBlockchain(nik string, fundid string, username string, numofponds int, amountoffund int) {
-	_, err := __interface.TransactionsContractInterface().SetFunderApproverTransaction(__interface.GetTransactionContractAuth(), nik, __transactionContract.TransactionContractFunderApproverTransaction{
+	_, err := __interface.TransactionsContractInterface().SetFunderApproverTransaction(__interface.GetTransactionContractAuth(), __transactionContract.TransactionContractFunderApproverTransaction{
 		Fundid:        fundid,
+		Nik:           nik,
 		Funder:        username,
 		Timestamp:     time.Now().String(),
 		Numberofponds: big.NewInt(int64(numofponds)),
@@ -46,10 +47,17 @@ func InsertFundingBlockchain(nik string, fundid string, username string, numofpo
 }
 
 func GetFunderBlockChain(nik string) []__transactionContract.TransactionContractFunderApproverTransaction {
-	reply, err := __interface.TransactionsContractInterface().GetFunderApproverTransaction(&bind.CallOpts{}, nik) // conn call the balance function of deployed smart contract
+	reply, err := __interface.TransactionsContractInterface().GetFunderApproverTransaction(&bind.CallOpts{}) // conn call the balance function of deployed smart contract
 	// conn call the balance function of deployed smart contract
 	if err != nil {
 		panic(err)
+	}
+
+	var funderApproverTransactions []__transactionContract.TransactionContractFunderApproverTransaction
+	for _, funderapprovertransaction := range reply {
+		if funderapprovertransaction.Nik == nik {
+			funderApproverTransactions = append(funderApproverTransactions, funderapprovertransaction)
+		}
 	}
 
 	return reply

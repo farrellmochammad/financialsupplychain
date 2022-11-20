@@ -5,7 +5,6 @@ import (
 	__transactionContract "financingsupplychain/api/transactioncontract"
 	__interface "financingsupplychain/interfaces"
 	__models "financingsupplychain/models"
-	"fmt"
 	"log"
 	"math/big"
 	"time"
@@ -14,7 +13,6 @@ import (
 )
 
 func InsertMonitoringPondBlockChain(fundid string, monitoring *__models.MonitoringPond) {
-	fmt.Println("Fund Id : ", fundid)
 	_, err := __interface.TransactionsContractInterface().SetMonitoring(__interface.GetTransactionContractAuth(), fundid, __transactionContract.TransactionContractMonitoring{
 		Timestamp:   time.Now().String(),
 		Weight:      big.NewInt(int64(monitoring.Weight)),
@@ -27,7 +25,6 @@ func InsertMonitoringPondBlockChain(fundid string, monitoring *__models.Monitori
 }
 
 func GetMonitoringBlockChain(fundid string) []__transactionContract.TransactionContractMonitoring {
-	fmt.Println("Fund Id  2: ", fundid)
 	reply, err := __interface.TransactionsContractInterface().GetMonitoring(&bind.CallOpts{}, fundid) // conn call the balance function of deployed smart contract
 	// conn call the balance function of deployed smart contract
 	if err != nil {
