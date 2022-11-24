@@ -26,6 +26,7 @@ func main() {
 		"Nik" TEXT NOT NULL PRIMARY KEY,
 		"Name" TEXT NOT NULL,
 		"Phone" TEXT NOT NULL,
+		"SubmitBy" TEXT NOT NULL,
 		"Dob" TEXT,
 		"Address" TEXT,
 		"StartFarming" TEXT,

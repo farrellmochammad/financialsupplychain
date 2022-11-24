@@ -4,6 +4,7 @@ type Experience struct {
 	Nik           string `json:"nik" form:"nik" query:"nik"`
 	Name          string `json:"name" form:"name" query:"name"`
 	Phone         string `json:"phone" form:"phone" query:"phone"`
+	SubmitBy      string `json:"submit_by" form:"submit_by" query:"submit_by"`
 	Dob           string `json:"dob" form:"dob" query:"dob"`
 	Address       string `json:"address" form:"address" query:"address"`
 	StartFarming  string `json:"start_farming" form:"start_farming" query:"start_farming"`

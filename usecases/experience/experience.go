@@ -89,6 +89,15 @@ func GetExperiences(c echo.Context) error {
 	})
 }
 
+func GetExperiencesByUsername(c echo.Context) error {
+
+	experiences := __repository.GetExperiencesByUsername(fmt.Sprintf("%v", c.Get("username")))
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"data": experiences,
+	})
+}
+
 func UploadFile(c echo.Context) error {
 
 	uploadfileurl := &__model.UploadFile{}

@@ -37,6 +37,7 @@ func main() {
 	e.POST("/experience", __middleware.ValidateJWT(__ExperienceUsecase.InsertExperience))
 	e.PUT("/experience", __middleware.ValidateJWT(__ExperienceUsecase.UpdateExperience))
 	e.GET("/experiences", __middleware.ValidateJWT(__ExperienceUsecase.GetExperiences))
+	e.GET("/experiences_sales", __middleware.ValidateJWT(__ExperienceUsecase.GetExperiencesByUsername))
 	e.GET("/experience_fund/:fund_id", __middleware.ValidateJWT(__ExperienceUsecase.GetExperienceByFundId))
 	e.GET("/experience_nik/:nik", __middleware.ValidateJWT(__ExperienceUsecase.GetExperienceByNik))
 	e.PUT("/uploadfile", __middleware.ValidateJWT(__ExperienceUsecase.UploadFile))
