@@ -74,6 +74,41 @@ func InsertFunder(funder *__model.Funder) {
 	defer db.Close()
 }
 
+func GetFundersBySales(username string) []__model.Funder {
+	db, errDB := sql.Open("sqlite3", "./funder_db.db")
+	if errDB != nil {
+		panic(errDB)
+	}
+
+	rows, err := db.Query("SELECT FundId,Nik,FishType,NumberOfPonds,AmountOfFund, SubmittedBy FROM funder")
+	if err != nil {
+		panic(err)
+	}
+
+	var scanner __model.Funder
+
+	var funders []__model.Funder
+
+	for rows.Next() {
+		err = rows.Scan(&scanner.FundId, &scanner.Nik, &scanner.FishType, &scanner.NumberOfPonds, &scanner.AmountOfFund, &scanner.SubmittedBy)
+
+		if err != nil {
+			panic(err)
+		}
+
+		if scanner.SubmittedBy == username {
+			funders = append(funders, scanner)
+		}
+
+	}
+
+	defer rows.Close()
+
+	defer db.Close()
+
+	return funders
+}
+
 func GetFunders() []__model.Funder {
 	db, errDB := sql.Open("sqlite3", "./funder_db.db")
 	if errDB != nil {

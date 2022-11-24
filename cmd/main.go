@@ -43,6 +43,7 @@ func main() {
 	e.PUT("/uploadfile", __middleware.ValidateJWT(__ExperienceUsecase.UploadFile))
 
 	e.GET("/funders", __middleware.ValidateJWT(__FunderUsecase.GetFunders))
+	e.GET("/funders_sales", __middleware.ValidateJWT(__FunderUsecase.GetFundersBySales))
 	e.GET("/funder/:nik", __middleware.ValidateJWT(__FunderUsecase.GetFunderBlockChain))
 	e.GET("/funder_nik/:nik", __middleware.ValidateJWT(__FunderUsecase.GetFunderByNik))
 	e.PUT("/uploadfilefunder", __middleware.ValidateJWT(__FunderUsecase.UploadFileFunder))
@@ -63,6 +64,7 @@ func main() {
 
 	e.POST("/sign", __middleware.ValidateJWT(__SignUsecase.InsertSigned))
 	e.GET("/signs", __middleware.ValidateJWT(__SignUsecase.GetSigns))
+	e.GET("/signs_sales", __middleware.ValidateJWT(__SignUsecase.GetSignsBySales))
 	e.GET("/sign/:fundid", __middleware.ValidateJWT(__SignUsecase.GetSign))
 
 	e.POST("/credit", __middleware.ValidateJWT(__CreditUsecase.InsertCredit))

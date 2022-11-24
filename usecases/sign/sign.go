@@ -1,6 +1,7 @@
 package sign
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -28,6 +29,22 @@ func InsertSigned(c echo.Context) error {
 func GetSigns(c echo.Context) error {
 
 	signs := __repository.GetSigns()
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"data": signs,
+	})
+}
+
+func GetSignsBySales(c echo.Context) error {
+
+	funded := __repository.GetFundersBySales(fmt.Sprintf("%v", c.Get("username")))
+
+	var fundids []string
+	for i := 0; i < len(funded); i++ {
+		fundids = append(fundids, funded[i].FundId)
+	}
+
+	signs := __repository.GetSignsByFundId(fundids)
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"data": signs,
