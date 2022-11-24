@@ -37,11 +37,15 @@ func main() {
 	e.POST("/experience", __middleware.ValidateJWT(__ExperienceUsecase.InsertExperience))
 	e.PUT("/experience", __middleware.ValidateJWT(__ExperienceUsecase.UpdateExperience))
 	e.GET("/experiences", __middleware.ValidateJWT(__ExperienceUsecase.GetExperiences))
-	e.GET("/experience/:nik", __middleware.ValidateJWT(__ExperienceUsecase.GetExperience))
+	e.GET("/experience_fund/:fund_id", __middleware.ValidateJWT(__ExperienceUsecase.GetExperienceByFundId))
+	e.GET("/experience_nik/:nik", __middleware.ValidateJWT(__ExperienceUsecase.GetExperienceByNik))
 	e.PUT("/uploadfile", __middleware.ValidateJWT(__ExperienceUsecase.UploadFile))
 
 	e.GET("/funders", __middleware.ValidateJWT(__FunderUsecase.GetFunders))
 	e.GET("/funder/:nik", __middleware.ValidateJWT(__FunderUsecase.GetFunderBlockChain))
+	e.GET("/funder_nik/:nik", __middleware.ValidateJWT(__FunderUsecase.GetFunderByNik))
+	e.PUT("/uploadfilefunder", __middleware.ValidateJWT(__FunderUsecase.UploadFileFunder))
+	e.PUT("/insertfunder", __middleware.ValidateJWT(__FunderUsecase.InsertFunder))
 	e.POST("/funder", __middleware.ValidateJWT(__FunderUsecase.InsertFunderBlockChain))
 
 	e.POST("/monitoring", __middleware.ValidateJWT(__MonitoringUsecase.InsertMonitoring))

@@ -84,10 +84,9 @@ func GetCurrentAverage() *big.Int {
 	return reply
 }
 
-func InsertExperienceBlockChain(username string, nik string, numofponds int, spawningaverage int, creditscore *big.Int) {
-	_, err := __interface.TransactionsContractInterface().SetApproverTransaction(__interface.GetTransactionContractAuth(), __transactionContract.TransactionContractApproverTransaction{
+func InsertExperienceBlockChain(username string, fundid string, numofponds int, spawningaverage int, creditscore *big.Int) {
+	_, err := __interface.TransactionsContractInterface().SetApproverTransaction(__interface.GetTransactionContractAuth(), fundid, __transactionContract.TransactionContractApproverTransaction{
 		Submitby:        username,
-		Nik:             nik,
 		Status:          "Approved",
 		Timestamp:       time.Now().String(),
 		Numofponds:      big.NewInt(int64(numofponds)),
@@ -99,8 +98,18 @@ func InsertExperienceBlockChain(username string, nik string, numofponds int, spa
 	}
 }
 
-func GetExperienceBlockchain(nik string, username string) []__transactionContract.TransactionContractApproverTransaction {
-	reply, err := __interface.TransactionsContractInterface().GetApproverTransaction(&bind.CallOpts{}) // conn call the balance function of deployed smart contract
+func GetExperienceBlockchain(fundid string) []__transactionContract.TransactionContractApproverTransaction {
+	reply, err := __interface.TransactionsContractInterface().GetApproverTransaction(&bind.CallOpts{}, fundid) // conn call the balance function of deployed smart contract
+	// conn call the balance function of deployed smart contract
+	if err != nil {
+		panic(err)
+	}
+
+	return reply
+}
+
+func GetExperienceBlockchainByUsername(fundid string, username string) []__transactionContract.TransactionContractApproverTransaction {
+	reply, err := __interface.TransactionsContractInterface().GetApproverTransaction(&bind.CallOpts{}, fundid) // conn call the balance function of deployed smart contract
 	// conn call the balance function of deployed smart contract
 	if err != nil {
 		panic(err)
@@ -108,7 +117,7 @@ func GetExperienceBlockchain(nik string, username string) []__transactionContrac
 
 	var approverTransaction []__transactionContract.TransactionContractApproverTransaction
 	for _, approvertransaction := range reply {
-		if approvertransaction.Nik == nik {
+		if approvertransaction.Submitby == username {
 			approverTransaction = append(approverTransaction, approvertransaction)
 		}
 	}

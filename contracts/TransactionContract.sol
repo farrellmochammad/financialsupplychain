@@ -9,7 +9,6 @@ contract TransactionContract {
 
 
     struct ApproverTransaction {
-        string nik;
         string submitby;
         string status;
         string timestamp;
@@ -19,8 +18,6 @@ contract TransactionContract {
     }
 
     struct FunderApproverTransaction {
-        string fundid;
-        string nik;
         string funder;
         string timestamp;
         uint numberofponds;
@@ -40,8 +37,8 @@ contract TransactionContract {
         uint weight;
     }
 
-    ApproverTransaction[] public approverTransactions;
-    FunderApproverTransaction[] public funderApproverTransactions;
+    mapping(string => ApproverTransaction[]) public approverTransactions;
+    mapping(string => FunderApproverTransaction[]) public funderApproverTransactions;
     mapping(string => Monitoring[]) public pondMonitorings;
     mapping(string => Spawning[]) public spawningHistory;
 
@@ -50,23 +47,23 @@ contract TransactionContract {
         owner = msg.sender; // 'msg.sender' is sender of  current call, contract deployer for a constructo
     }
 
-    function setApproverTransaction(ApproverTransaction memory _approvertransaction) public {
+    function setApproverTransaction(string memory _fundid,ApproverTransaction memory _approvertransaction) public {
         require(msg.sender == owner);
-        approverTransactions.push(_approvertransaction);
+        approverTransactions[_fundid].push(_approvertransaction);
     }
 
-    function getApproverTransaction() public view returns (ApproverTransaction[] memory){
-        return approverTransactions;
+    function getApproverTransaction(string memory _fundid) public view returns (ApproverTransaction[] memory){
+        return approverTransactions[_fundid];
     }
 
 
-    function setFunderApproverTransaction(FunderApproverTransaction memory _funderapprovertransaction) public {
+    function setFunderApproverTransaction(string memory _fundid,FunderApproverTransaction memory _funderapprovertransaction) public {
         require(msg.sender == owner);
-        funderApproverTransactions.push(_funderapprovertransaction);
+        funderApproverTransactions[_fundid].push(_funderapprovertransaction);
     }
 
-    function getFunderApproverTransaction() public view returns (FunderApproverTransaction[] memory){
-        return funderApproverTransactions;
+    function getFunderApproverTransaction(string memory _fundid) public view returns (FunderApproverTransaction[] memory){
+        return funderApproverTransactions[_fundid];
     }
 
     function setMonitoring(string memory _fundid,Monitoring memory _monitoring) public {
@@ -85,6 +82,10 @@ contract TransactionContract {
 
     function getSpawning(string memory _fundid) public view returns (Spawning[] memory){
         return spawningHistory[_fundid];
+    }
+
+    function compareStrings(string memory a, string memory b) public pure returns (bool) {
+        return (keccak256(abi.encodePacked((a))) == keccak256(abi.encodePacked((b))));
     }
    
 }

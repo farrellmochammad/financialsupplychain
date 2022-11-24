@@ -25,7 +25,12 @@ func main() {
 	funder_table := `CREATE TABLE funder (
 		"FundId" TEXT NOT NULL PRIMARY KEY,
 		"Nik" TEXT NOT NULL,
-		"FishType" TEXT,
+		"SubmittedBy" TEXT NOT NULL,
+		"SubmittedTimestamp" TEXT,
+		"FundedBy" TEXT,
+		"FundedTimestamp" TEXT,
+		"FileUrl" TEXT,
+		"FishType" TEXT, 
 		"NumberOfPonds" INTEGER,
 		"AmountOfFund" INTEGER);`
 

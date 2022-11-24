@@ -3,10 +3,12 @@ package experience
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/montanaflynn/stats"
 
+	"financingsupplychain/models"
 	__model "financingsupplychain/models"
 	__repository "financingsupplychain/repositories"
 )
@@ -29,7 +31,7 @@ func InsertExperience(c echo.Context) error {
 	credits := __repository.GetCredit(experience.Nik)
 	if !__repository.CreditsHistoryValidation(credits) {
 		return c.JSON(http.StatusNotAcceptable, map[string]interface{}{
-			"Status": "Maaf hdata ditolak karena terdapat kredit macet",
+			"Status": "Maaf data ditolak karena terdapat kredit macet",
 		})
 	}
 
@@ -43,6 +45,19 @@ func InsertExperience(c echo.Context) error {
 	__repository.InsertExperienceBlockChain(fmt.Sprintf("%v", c.Get("username")), experience.Nik, experience.NumberOfPonds, int(average), creditscore)
 
 	__repository.InsertExperience(experience)
+
+	funder := &models.Funder{
+		FundId:             __repository.NewSHA1Hash(),
+		Nik:                experience.Nik,
+		SubmittedBy:        fmt.Sprintf("%v", c.Get("username")),
+		SubmittedTimestamp: time.Now().String(),
+		FishType:           experience.FishType,
+		NumberOfPonds:      experience.NumberOfPonds,
+		AmountOfFund:       0,
+	}
+
+	fmt.Println("Funder : ", funder)
+	__repository.InsertFunder(funder)
 
 	return c.JSON(http.StatusAccepted, map[string]interface{}{
 		"status": "Insert Experience Success",
@@ -92,21 +107,78 @@ func UploadFile(c echo.Context) error {
 
 }
 
-func GetExperience(c echo.Context) error {
+func GetExperienceByFundId(c echo.Context) error {
 
-	nik := c.Param("nik")
+	fundid := c.Param("fundid")
 	username := fmt.Sprintf("%v", c.Get("username"))
 
-	experiences := __repository.GetExperienceBlockchain(nik, username)
+	if c.Get("role") == "analyst" {
+		experiences := __repository.GetExperienceBlockchain(fundid)
 
-	if len(experiences) == 0 {
-		return c.JSON(http.StatusNotFound, map[string]interface{}{
-			"status": "Experience not found",
+		if len(experiences) == 0 {
+			return c.JSON(http.StatusNotFound, map[string]interface{}{
+				"status": "Experience not found",
+			})
+		}
+
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"data": experiences,
 		})
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"data": experiences,
-	})
+	if c.Get("role") == "sales" {
+		experiences := __repository.GetExperienceBlockchainByUsername(fundid, username)
 
+		if len(experiences) == 0 {
+			return c.JSON(http.StatusNotFound, map[string]interface{}{
+				"status": "Experience not found",
+			})
+		}
+
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"data": experiences,
+		})
+	}
+
+	return c.JSON(http.StatusNotFound, map[string]interface{}{
+		"status": "Error getting experience",
+	})
+}
+
+func GetExperienceByNik(c echo.Context) error {
+
+	fundid := c.Param("nik")
+	username := fmt.Sprintf("%v", c.Get("username"))
+
+	if c.Get("role") == "analyst" {
+		experiences := __repository.GetExperienceBlockchain(fundid)
+
+		if len(experiences) == 0 {
+			return c.JSON(http.StatusNotFound, map[string]interface{}{
+				"status": "Experience not found",
+			})
+		}
+
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"data": experiences,
+		})
+	}
+
+	if c.Get("role") == "sales" {
+		experiences := __repository.GetExperienceBlockchainByUsername(fundid, username)
+
+		if len(experiences) == 0 {
+			return c.JSON(http.StatusNotFound, map[string]interface{}{
+				"status": "Experience not found",
+			})
+		}
+
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"data": experiences,
+		})
+	}
+
+	return c.JSON(http.StatusNotFound, map[string]interface{}{
+		"status": "Error getting experience",
+	})
 }

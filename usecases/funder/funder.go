@@ -38,7 +38,7 @@ func InsertFunderBlockChain(c echo.Context) error {
 
 	fundid := __repository.NewSHA1Hash()
 	funder.FundId = fundid
-	__repository.InsertFundingBlockchain(funder.Nik, fundid, fmt.Sprintf("%v", c.Get("username")), funder.NumberOfPonds, funder.AmountOfFund)
+	__repository.InsertFundingBlockchain(fundid, fmt.Sprintf("%v", c.Get("username")), funder.NumberOfPonds, funder.AmountOfFund)
 	__repository.InsertFunder(funder)
 
 	return c.JSON(http.StatusAccepted, map[string]interface{}{
@@ -57,6 +57,59 @@ func GetFunders(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"data": funders,
+	})
+
+}
+
+func GetFunderByNik(c echo.Context) error {
+
+	nik := c.Param("nik")
+
+	funders := __repository.GetFunderByNik(nik)
+	if len(funders) == 0 {
+		return c.JSON(http.StatusNotFound, map[string]interface{}{
+			"status": "Funder not found",
+		})
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"data": funders,
+	})
+
+}
+
+func UploadFileFunder(c echo.Context) error {
+
+	uploadfileurl := &__model.UploadFileFund{}
+	if err := c.Bind(&uploadfileurl); err != nil {
+		return c.JSON(http.StatusBadGateway, map[string]interface{}{
+			"message": "failed",
+			"err":     err,
+		})
+	}
+
+	__repository.UploadFileFundId(uploadfileurl.FileUrl, uploadfileurl.FundId)
+
+	return c.JSON(http.StatusAccepted, map[string]interface{}{
+		"status": "success",
+	})
+
+}
+
+func InsertFunder(c echo.Context) error {
+
+	insertfund := &__model.InsertFund{}
+	if err := c.Bind(&insertfund); err != nil {
+		return c.JSON(http.StatusBadGateway, map[string]interface{}{
+			"message": "failed",
+			"err":     err,
+		})
+	}
+
+	__repository.InsertFund(insertfund.AmountOfFund, insertfund.FundId)
+
+	return c.JSON(http.StatusAccepted, map[string]interface{}{
+		"status": "success",
 	})
 
 }

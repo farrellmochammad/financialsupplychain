@@ -18,3 +18,13 @@ type UploadFile struct {
 	Nik     string `json:"nik" form:"nik" query:"nik"`
 	FileUrl string `json:"file_url" form:"file_url" query:"file_url"`
 }
+
+type UploadFileFund struct {
+	FundId  string `json:"fund_id" form:"fund_id" query:"fund_id"`
+	FileUrl string `json:"file_url" form:"file_url" query:"file_url"`
+}
+
+type InsertFund struct {
+	FundId       string `json:"fund_id" form:"fund_id" query:"fund_id"`
+	AmountOfFund int    `json:"amount_of_fund" form:"amount_of_fund" query:"amount_of_fund"`
+}
