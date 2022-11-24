@@ -22,6 +22,7 @@ func InsertExperience(c echo.Context) error {
 		})
 	}
 
+	experience.SubmitBy = fmt.Sprintf("%v", c.Get("username"))
 	if !__repository.NumOfPondsValidation(experience) {
 		return c.JSON(http.StatusNotAcceptable, map[string]interface{}{
 			"Status": "Maaf jumlah kolam tidak sesuai dengan persyaratan",
