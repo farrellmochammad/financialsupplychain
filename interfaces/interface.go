@@ -21,6 +21,8 @@ type single struct {
 }
 
 var singleInstance *single
+var singleInstanceTransaction *single
+var singleInstanceCreditScore *single
 var client *ethclient.Client
 var deployedCreditContract common.Address
 var deployedTransactionContract common.Address
@@ -30,11 +32,12 @@ var creditContractAuth *bind.TransactOpts
 var transactionContractAuth *bind.TransactOpts
 var err error
 
-func StartConnection() *single {
+func DeployTransaction() *single {
 	if singleInstance == nil {
 		lock.Lock()
 		defer lock.Unlock()
 		if singleInstance == nil {
+			fmt.Println("Init start connection that clean data")
 			singleInstance = &single{}
 			client, err = ethclient.Dial("http://172.27.224.1:7545")
 			if err != nil {
@@ -49,6 +52,7 @@ func StartConnection() *single {
 			if err != nil {
 				panic(err)
 			}
+			fmt.Println("Value Credit Score : ", deployedCreditContract.Hex())
 
 			// create connection object to connect through are binary go file and deployed contract with help of address
 			connCredit, err = __creditscoreContract.NewApi(common.HexToAddress(deployedCreditContract.Hex()), client)
@@ -65,6 +69,8 @@ func StartConnection() *single {
 				panic(err)
 			}
 
+			fmt.Println("Value Transaction : ", deployedTransactionContract.Hex())
+
 			// create connection object to connect through are binary go file and deployed contract with help of address
 			connTransaction, err = __transactionsContract.NewApi(common.HexToAddress(deployedTransactionContract.Hex()), client)
 			if err != nil {
@@ -76,14 +82,56 @@ func StartConnection() *single {
 	return singleInstance
 }
 
+func InitConnectionTransaction() *single {
+	if singleInstanceTransaction == nil {
+		lock.Lock()
+		defer lock.Unlock()
+		if singleInstanceTransaction == nil {
+			client, err = ethclient.Dial("http://172.27.224.1:7545")
+			if err != nil {
+				panic(err)
+			}
+
+			hexaddress := "0x0fd5f1b0c91fA9C313AE8B5cE78B7B27A5b87f12"
+			// create connection object to connect through are binary go file and deployed contract with help of address
+			connTransaction, err = __transactionsContract.NewApi(common.HexToAddress(hexaddress), client)
+			if err != nil {
+				panic(err)
+			}
+		}
+	}
+	return singleInstanceTransaction
+}
+
+func InitConnectionCreditScore() *single {
+	if singleInstanceCreditScore == nil {
+		lock.Lock()
+		defer lock.Unlock()
+		if singleInstanceCreditScore == nil {
+			client, err = ethclient.Dial("http://172.27.224.1:7545")
+			if err != nil {
+				panic(err)
+			}
+
+			// create connection object to connect through are binary go file and deployed contract with help of address
+			hexaddress := "0x7B9Ed6088909a1e4eCdB79F2caE3E3Bd8eC1dfeF"
+			connCredit, err = __creditscoreContract.NewApi(common.HexToAddress(hexaddress), client)
+			if err != nil {
+				panic(err)
+			}
+		}
+	}
+	return singleInstanceCreditScore
+}
+
 func CreditScoreContractInterface() *__creditscoreContract.Api {
-	StartConnection()
+	InitConnectionCreditScore()
 
 	return connCredit
 }
 
 func TransactionsContractInterface() *__transactionsContract.Api {
-	StartConnection()
+	InitConnectionTransaction()
 
 	return connTransaction
 }
@@ -94,7 +142,6 @@ func GetCreditContractAuth() *bind.TransactOpts {
 }
 
 func GetTransactionContractAuth() *bind.TransactOpts {
-	StartConnection()
 
 	return getAccountAuth(client, "71723c973dfa7e0e73443705fe3c5cde3e53ee1e889c437ad4a06ab9b78031dc")
 }

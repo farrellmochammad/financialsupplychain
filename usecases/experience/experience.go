@@ -59,8 +59,6 @@ func InsertExperience(c echo.Context) error {
 
 	creditscore := __repository.GenerateCreditScoreBlockChain(yoe, experience.NumberOfPonds, credits, spawning_histories)
 
-	__repository.InsertExperienceBlockChain(fmt.Sprintf("%v", c.Get("username")), experience.Nik, experience.NumberOfPonds, int(average), creditscore)
-
 	__repository.InsertExperience(experience)
 
 	funder := &models.Funder{
@@ -74,6 +72,8 @@ func InsertExperience(c echo.Context) error {
 	}
 
 	__repository.InsertFunder(funder)
+
+	__repository.InsertExperienceBlockChain(fmt.Sprintf("%v", c.Get("username")), funder.FundId, experience.NumberOfPonds, int(average), creditscore)
 
 	return c.JSON(http.StatusAccepted, map[string]interface{}{
 		"status": "Insert Experience Success",
@@ -96,6 +96,38 @@ func UpdateExperience(c echo.Context) error {
 	})
 }
 
+func GetExperienceSales(c echo.Context) error {
+
+	experiences := __repository.GetExperiencesByUsername(fmt.Sprintf("%v", c.Get("username")))
+
+	if len(experiences) == 0 {
+		return c.JSON(http.StatusAccepted, map[string]interface{}{
+			"status": "Tidak ada data experience",
+		})
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"data": experiences,
+	})
+}
+
+func GetExperiencesSalesBlockchain(c echo.Context) error {
+
+	fundid := c.Param("fund_id")
+
+	experiences := __repository.GetExperienceBlockchainByUsername(fundid, fmt.Sprintf("%v", c.Get("username")))
+
+	if len(experiences) == 0 {
+		return c.JSON(http.StatusAccepted, map[string]interface{}{
+			"status": "Tidak ada data experience",
+		})
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"data": experiences,
+	})
+}
+
 func GetExperiences(c echo.Context) error {
 
 	experiences := __repository.GetExperiences()
@@ -107,7 +139,9 @@ func GetExperiences(c echo.Context) error {
 
 func GetExperiencesByUsername(c echo.Context) error {
 
-	experiences := __repository.GetExperiencesByUsername(fmt.Sprintf("%v", c.Get("username")))
+	fundid := c.Param("fundid")
+
+	experiences := __repository.GetExperienceBlockchainByUsername(fundid, fmt.Sprintf("%v", c.Get("username")))
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"data": experiences,
