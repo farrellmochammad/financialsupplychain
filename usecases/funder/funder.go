@@ -3,9 +3,12 @@ package funder
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/labstack/echo/v4"
+	"github.com/montanaflynn/stats"
 
+	"financingsupplychain/models"
 	__model "financingsupplychain/models"
 	__repository "financingsupplychain/repositories"
 )
@@ -43,6 +46,69 @@ func InsertFunderBlockChain(c echo.Context) error {
 
 	return c.JSON(http.StatusAccepted, map[string]interface{}{
 		"status": "Insert Funder Success",
+	})
+}
+
+func InsertFunderSubmission(c echo.Context) error {
+	fund_submission := new(__model.FundSubmission)
+	if err := c.Bind(&fund_submission); err != nil {
+		return c.JSON(http.StatusBadGateway, map[string]interface{}{
+			"message": "failed",
+		})
+	}
+
+	if !__repository.NumOfPondsValidationByInt(fund_submission.NumberOfPonds) {
+		return c.JSON(http.StatusNotAcceptable, map[string]interface{}{
+			"Status": "Maaf jumlah kolam tidak sesuai dengan persyaratan",
+		})
+	}
+
+	credits := __repository.GetCredit(fund_submission.Nik)
+	if !__repository.CreditsHistoryValidation(credits) {
+		return c.JSON(http.StatusNotAcceptable, map[string]interface{}{
+			"Status": "Maaf data ditolak karena terdapat kredit macet",
+		})
+	}
+
+	spawnings := stats.LoadRawData(__repository.GetSpawningHistoryAmounts(fund_submission.Nik))
+
+	average, _ := stats.Mean(spawnings)
+	__repository.AddSpawningAverage(int(average))
+
+	spawning_histories := __repository.GetSpawningHistory(fund_submission.Nik)
+
+	//Convert start farming to years of experience
+	startfarming, errConvert := time.Parse("2006-01-02", fund_submission.StartFarming)
+
+	if errConvert != nil {
+		fmt.Println(errConvert)
+		return c.JSON(http.StatusNotAcceptable, map[string]interface{}{
+			"status": "Cannot convert date to years of experience",
+		})
+	}
+
+	currenttime := time.Now()
+
+	yoe := int(currenttime.Sub(startfarming).Hours() / 24 / 365)
+
+	creditscore := __repository.GenerateCreditScoreBlockChain(yoe, fund_submission.NumberOfPonds, credits, spawning_histories)
+
+	funder := &models.Funder{
+		FundId:             __repository.NewSHA1Hash(),
+		Nik:                fund_submission.Nik,
+		SubmittedBy:        fmt.Sprintf("%v", c.Get("username")),
+		SubmittedTimestamp: time.Now().String(),
+		FishType:           fund_submission.FishType,
+		NumberOfPonds:      fund_submission.NumberOfPonds,
+		AmountOfFund:       0,
+	}
+
+	__repository.InsertFunder(funder)
+
+	__repository.InsertExperienceBlockChain(fmt.Sprintf("%v", c.Get("username")), funder.FundId, fund_submission.NumberOfPonds, int(average), creditscore)
+
+	return c.JSON(http.StatusAccepted, map[string]interface{}{
+		"status": "Insert Experience Success",
 	})
 }
 

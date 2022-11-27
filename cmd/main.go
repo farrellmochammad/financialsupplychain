@@ -50,6 +50,7 @@ func main() {
 	e.PUT("/uploadfilefunder", __middleware.ValidateJWT(__FunderUsecase.UploadFileFunder))
 	e.PUT("/insertfunder", __middleware.ValidateJWT(__FunderUsecase.InsertFunder))
 	e.POST("/funder", __middleware.ValidateJWT(__FunderUsecase.InsertFunderBlockChain))
+	e.POST("/funder_submission", __middleware.ValidateJWT(__FunderUsecase.InsertFunderSubmission))
 
 	e.POST("/monitoring", __middleware.ValidateJWT(__MonitoringUsecase.InsertMonitoring))
 	e.GET("/monitorings", __middleware.ValidateJWT(__MonitoringUsecase.GetMonitorings))

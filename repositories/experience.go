@@ -42,6 +42,16 @@ func NumOfPondsValidation(experience *__models.Experience) bool {
 
 }
 
+func NumOfPondsValidationByInt(nop int) bool {
+	reply, err := __interface.CreditScoreContractInterface().PondValidation(&bind.CallOpts{}, big.NewInt(int64(nop))) // conn call the balance function of deployed smart contract
+	if err != nil {
+		panic(err)
+	}
+
+	return reply
+
+}
+
 func CreditsHistoryValidation(credits []__models.Credit) bool {
 	if len(credits) == 0 {
 		return true
@@ -96,6 +106,7 @@ func InsertExperienceBlockChain(username string, fundid string, numofponds int, 
 	if err != nil {
 		panic(err)
 	}
+
 }
 
 func GetExperienceBlockchain(fundid string) []__transactionContract.TransactionContractApproverTransaction {
