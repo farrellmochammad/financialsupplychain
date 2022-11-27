@@ -3,11 +3,45 @@ package repositories
 import (
 	"crypto/sha1"
 	"database/sql"
+	__creditContract "financingsupplychain/api/creditscorecontract"
+	__interface "financingsupplychain/interfaces"
 	__models "financingsupplychain/models"
 	"fmt"
 	"log"
+	"math/big"
 	"math/rand"
+
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 )
+
+func GenerateCreditScoreBlockChain(yoe int, nop int, credits []__models.Credit, spawnings []__models.Spawning) *big.Int {
+	var credits_object []__creditContract.CreditScoreContractCredit
+
+	for i := 0; i < len(credits); i++ {
+		credit := __creditContract.CreditScoreContractCredit{
+			CreditAmount: big.NewInt(int64(credits[i].CreditAmount)),
+			Status:       credits[i].Status,
+		}
+		credits_object = append(credits_object, credit)
+	}
+
+	var spawning_object []__creditContract.CreditScoreContractSpawning
+
+	for i := 0; i < len(spawnings); i++ {
+		spawning := __creditContract.CreditScoreContractSpawning{
+			TotalSpawning: big.NewInt(int64(spawnings[i].TotalSpawning)),
+			SpawningDate:  spawnings[i].SpawningDate,
+		}
+		spawning_object = append(spawning_object, spawning)
+	}
+
+	reply, err := __interface.CreditScoreContractInterface().GenerateCreditScore(&bind.CallOpts{}, big.NewInt(int64(yoe)), big.NewInt(int64(nop)), credits_object, spawning_object) // conn call the balance function of deployed smart contract
+	if err != nil {
+		panic(err)
+	}
+
+	return reply
+}
 
 func InsertCredit(credit *__models.Credit) {
 	db, errDB := sql.Open("sqlite3", "./credit_db.db")

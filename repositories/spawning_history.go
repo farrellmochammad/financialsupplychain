@@ -57,7 +57,7 @@ func GetSpawningHistories() []__models.Spawning {
 	return spawnings
 }
 
-func GetSpawningHistory(nik string) __models.Spawning {
+func GetSpawningHistory(nik string) []__models.Spawning {
 	db, errDB := sql.Open("sqlite3", "./spawning_history.db")
 	if errDB != nil {
 		panic(errDB)
@@ -69,7 +69,7 @@ func GetSpawningHistory(nik string) __models.Spawning {
 	}
 
 	var spawningScan __models.Spawning
-	var spawningResult __models.Spawning
+	var spawningResult []__models.Spawning
 
 	for rows.Next() {
 		err = rows.Scan(&spawningScan.Nik, &spawningScan.Date, &spawningScan.Amount, &spawningScan.FishType)
@@ -79,13 +79,7 @@ func GetSpawningHistory(nik string) __models.Spawning {
 		}
 
 		if nik == spawningScan.Nik {
-			spawningResult = spawningScan
-
-			defer rows.Close()
-
-			defer db.Close()
-
-			return spawningResult
+			spawningResult = append(spawningResult, spawningScan)
 		}
 
 	}

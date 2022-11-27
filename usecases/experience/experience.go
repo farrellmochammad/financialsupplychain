@@ -41,8 +41,24 @@ func InsertExperience(c echo.Context) error {
 	average, _ := stats.Mean(spawnings)
 	__repository.AddSpawningAverage(int(average))
 
-	//need to improve
-	creditscore := __repository.GetCurrentAverage()
+	spawning_histories := __repository.GetSpawningHistory(experience.Nik)
+
+	//Convert start farming to years of experience
+	startfarming, errConvert := time.Parse("2006-01-02", experience.StartFarming)
+
+	if errConvert != nil {
+		fmt.Println(errConvert)
+		return c.JSON(http.StatusNotAcceptable, map[string]interface{}{
+			"status": "Cannot convert date to years of experience",
+		})
+	}
+
+	currenttime := time.Now()
+
+	yoe := int(currenttime.Sub(startfarming).Hours() / 24 / 365)
+
+	creditscore := __repository.GenerateCreditScoreBlockChain(yoe, experience.NumberOfPonds, credits, spawning_histories)
+
 	__repository.InsertExperienceBlockChain(fmt.Sprintf("%v", c.Get("username")), experience.Nik, experience.NumberOfPonds, int(average), creditscore)
 
 	__repository.InsertExperience(experience)
@@ -57,7 +73,6 @@ func InsertExperience(c echo.Context) error {
 		AmountOfFund:       0,
 	}
 
-	fmt.Println("Funder : ", funder)
 	__repository.InsertFunder(funder)
 
 	return c.JSON(http.StatusAccepted, map[string]interface{}{

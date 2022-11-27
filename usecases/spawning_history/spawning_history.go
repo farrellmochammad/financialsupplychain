@@ -39,7 +39,7 @@ func GetSpawningHistory(c echo.Context) error {
 
 	spawning := __repository.GetSpawningHistory(nik)
 
-	if (__model.Spawning{}) == spawning {
+	if len(spawning) == 0 {
 		return c.JSON(http.StatusNotFound, map[string]interface{}{
 			"status": "nik not found",
 		})
