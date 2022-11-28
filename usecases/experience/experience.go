@@ -168,10 +168,10 @@ func UploadFile(c echo.Context) error {
 
 func GetExperienceByFundId(c echo.Context) error {
 
-	fundid := c.Param("fundid")
+	fundid := c.Param("fund_id")
 	username := fmt.Sprintf("%v", c.Get("username"))
 
-	if c.Get("role") == "analyst" {
+	if c.Get("role") == "analyst" || c.Get("role") == "funder" {
 		experiences := __repository.GetExperienceBlockchain(fundid)
 
 		if len(experiences) == 0 {
