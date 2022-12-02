@@ -74,6 +74,7 @@ func InsertExperience(c echo.Context) error {
 	__repository.InsertFunder(funder)
 
 	__repository.InsertExperienceBlockChain(fmt.Sprintf("%v", c.Get("username")), funder.FundId, experience.NumberOfPonds, int(average), creditscore)
+	__repository.InsertPendingFundStatusFundingBlockchain(funder.FundId, fmt.Sprintf("%v", c.Get("username")))
 
 	return c.JSON(http.StatusAccepted, map[string]interface{}{
 		"status": "Insert Experience Success",

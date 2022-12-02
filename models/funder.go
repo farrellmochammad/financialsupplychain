@@ -11,6 +11,7 @@ type Funder struct {
 	FundedTimestamp    string `json:"funded_timestamp" form:"funded_timestamp" query:"funded_timestamp"`
 	FileUrl            string `json:"file_url" form:"file_url" query:"file_url"`
 	FishType           string `json:"fish_type" form:"fish_type" query:"fish_type"`
+	Status             string `json:"status" form:"status" query:"status"`
 	NumberOfPonds      int    `json:"number_of_ponds" form:"number_of_ponds" query:"number_of_ponds"`
 	AmountOfFund       int    `json:"amount_of_fund" form:"amount_of_fund" query:"amount_of_fund"`
 }

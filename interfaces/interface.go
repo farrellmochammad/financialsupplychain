@@ -92,7 +92,7 @@ func InitConnectionTransaction() *single {
 				panic(err)
 			}
 
-			hexaddress := "0x0fd5f1b0c91fA9C313AE8B5cE78B7B27A5b87f12"
+			hexaddress := "0x1fA637003ddC602e7d662351d9b1d4C4a5cc748B"
 			// create connection object to connect through are binary go file and deployed contract with help of address
 			connTransaction, err = __transactionsContract.NewApi(common.HexToAddress(hexaddress), client)
 			if err != nil {
@@ -114,7 +114,7 @@ func InitConnectionCreditScore() *single {
 			}
 
 			// create connection object to connect through are binary go file and deployed contract with help of address
-			hexaddress := "0x7B9Ed6088909a1e4eCdB79F2caE3E3Bd8eC1dfeF"
+			hexaddress := "0xe8582354606F11c58146808Fb53073b1c4564b69"
 			connCredit, err = __creditscoreContract.NewApi(common.HexToAddress(hexaddress), client)
 			if err != nil {
 				panic(err)

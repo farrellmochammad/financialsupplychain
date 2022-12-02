@@ -47,7 +47,10 @@ func main() {
 
 	e.GET("/funders", __middleware.ValidateJWT(__FunderUsecase.GetFunders))
 	e.GET("/funders_sales", __middleware.ValidateJWT(__FunderUsecase.GetFundersBySales))
+	e.GET("/funders_analyst", __middleware.ValidateJWT(__FunderUsecase.GetFundersByAnalyst))
 	e.GET("/funders_funder", __middleware.ValidateJWT(__FunderUsecase.GetFundersByFunder))
+	e.GET("/funders_approvefunder", __middleware.ValidateJWT(__FunderUsecase.GetFundersByApproveFunder))
+	e.GET("/funders_status/:fund_id", __middleware.ValidateJWT(__FunderUsecase.GetAllStatus))
 	e.GET("/funder/:nik", __middleware.ValidateJWT(__FunderUsecase.GetFunderBlockChain))
 	e.GET("/funder_nik/:nik", __middleware.ValidateJWT(__FunderUsecase.GetFunderByNik))
 	e.PUT("/uploadfilefunder", __middleware.ValidateJWT(__FunderUsecase.UploadFileFunder))

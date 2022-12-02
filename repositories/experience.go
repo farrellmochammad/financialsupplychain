@@ -97,7 +97,22 @@ func GetCurrentAverage() *big.Int {
 func InsertExperienceBlockChain(username string, fundid string, numofponds int, spawningaverage int, creditscore *big.Int) {
 	_, err := __interface.TransactionsContractInterface().SetApproverTransaction(__interface.GetTransactionContractAuth(), fundid, __transactionContract.TransactionContractApproverTransaction{
 		Submitby:        username,
-		Status:          "Approved",
+		Status:          "Draft",
+		Timestamp:       time.Now().String(),
+		Numofponds:      big.NewInt(int64(numofponds)),
+		Spawningaverage: big.NewInt(int64(spawningaverage)),
+		Creditscore:     creditscore,
+	}) // conn call the balance function of deployed smart contract
+	if err != nil {
+		panic(err)
+	}
+
+}
+
+func InsertExperienceBlockChainPendingFund(username string, fundid string, numofponds int, spawningaverage int, creditscore *big.Int) {
+	_, err := __interface.TransactionsContractInterface().SetApproverTransaction(__interface.GetTransactionContractAuth(), fundid, __transactionContract.TransactionContractApproverTransaction{
+		Submitby:        username,
+		Status:          "Pending Fund",
 		Timestamp:       time.Now().String(),
 		Numofponds:      big.NewInt(int64(numofponds)),
 		Spawningaverage: big.NewInt(int64(spawningaverage)),
@@ -168,7 +183,7 @@ func InsertExperience(experience *__models.Experience) {
 		log.Fatal(err)
 	}
 
-	_, err = query.Exec(experience.Nik, experience.Name, experience.Phone, experience.SubmitBy, "", "", experience.Dob, experience.Address, experience.StartFarming, experience.FishType, experience.NumberOfPonds, experience.Notes, "Approved")
+	_, err = query.Exec(experience.Nik, experience.Name, experience.Phone, experience.SubmitBy, "", "", experience.Dob, experience.Address, experience.StartFarming, experience.FishType, experience.NumberOfPonds, experience.Notes, "Pending Fund")
 	if err != nil {
 		log.Fatal(err)
 	}

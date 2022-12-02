@@ -121,7 +121,7 @@ contract CreditScoreContract {
             total += _spawnings[i].totalSpawning;
         }
 
-        if (total < 10) {
+        if (total < 100) {
             return 15;
         }
 

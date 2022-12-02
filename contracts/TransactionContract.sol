@@ -24,6 +24,12 @@ contract TransactionContract {
         uint amountoffund;
     }
 
+    struct StatusTransaction {
+        string status;
+        string username;
+        string timestamp;
+    }
+
     struct Monitoring {
         string timestamp;
         uint weight;
@@ -39,6 +45,8 @@ contract TransactionContract {
 
     mapping(string => ApproverTransaction[]) public approverTransactions;
     mapping(string => FunderApproverTransaction[]) public funderApproverTransactions;
+    mapping(string => StatusTransaction[]) public approverTransactionsHistory;
+    mapping(string => StatusTransaction[]) public funderApproverTransactionsHistory;
     mapping(string => Monitoring[]) public pondMonitorings;
     mapping(string => Spawning[]) public spawningHistory;
 
@@ -55,6 +63,33 @@ contract TransactionContract {
     function getApproverTransaction(string memory _fundid) public view returns (ApproverTransaction[] memory){
         return approverTransactions[_fundid];
     }
+
+    function setFunderApproverTransactionStatus(string memory _fundid,StatusTransaction memory _statustransaction) public {
+        require(msg.sender == owner);
+        funderApproverTransactionsHistory[_fundid].push(_statustransaction);
+    }
+
+    function getFunderApproverTransactionStatus(string memory _fundid) public view returns (StatusTransaction[] memory){
+        return funderApproverTransactionsHistory[_fundid];
+    }
+
+    function getLatestFunderApproverTransactionStatus(string memory _fundid) public view returns (StatusTransaction memory){
+        return funderApproverTransactionsHistory[_fundid][funderApproverTransactionsHistory[_fundid].length-1];
+    }
+
+    function setApproverTransactionStatus(string memory _fundid,StatusTransaction memory _statustransaction) public {
+        require(msg.sender == owner);
+        approverTransactionsHistory[_fundid].push(_statustransaction);
+    }
+
+    function getApproverTransactionStatus(string memory _fundid) public view returns (StatusTransaction[] memory){
+        return approverTransactionsHistory[_fundid];
+    }
+
+    function getLatestApproverTransactionStatus(string memory _fundid) public view returns (StatusTransaction memory){
+        return approverTransactionsHistory[_fundid][approverTransactionsHistory[_fundid].length-1];
+    }
+
 
 
     function setFunderApproverTransaction(string memory _fundid,FunderApproverTransaction memory _funderapprovertransaction) public {

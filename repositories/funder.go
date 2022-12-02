@@ -55,13 +55,77 @@ func GetFunderBlockChain(fundid string) []__transactionContract.TransactionContr
 	return reply
 }
 
+func InsertPendingFundStatusFundingBlockchain(fundid string, username string) {
+	_, err := __interface.TransactionsContractInterface().SetApproverTransactionStatus(__interface.GetTransactionContractAuth(), fundid, __transactionContract.TransactionContractStatusTransaction{
+		Status:    "Pending Fund",
+		Username:  username,
+		Timestamp: time.Now().String(),
+	}) // conn call the balance function of deployed smart contract
+	if err != nil {
+		panic(err)
+	}
+}
+
+func InsertRejectedFundStatusFundingBlockchain(fundid string, username string) {
+	_, err := __interface.TransactionsContractInterface().SetApproverTransactionStatus(__interface.GetTransactionContractAuth(), fundid, __transactionContract.TransactionContractStatusTransaction{
+		Status:    "Rejected",
+		Username:  username,
+		Timestamp: time.Now().String(),
+	}) // conn call the balance function of deployed smart contract
+	if err != nil {
+		panic(err)
+	}
+}
+
+func InsertApproveFundStatusFundingBlockchain(fundid string, username string) {
+	_, err := __interface.TransactionsContractInterface().SetApproverTransactionStatus(__interface.GetTransactionContractAuth(), fundid, __transactionContract.TransactionContractStatusTransaction{
+		Status:    "Approved",
+		Username:  username,
+		Timestamp: time.Now().String(),
+	}) // conn call the balance function of deployed smart contract
+	if err != nil {
+		panic(err)
+	}
+}
+
+func InsertSignedFundStatusFundingBlockchain(fundid string, username string) {
+	_, err := __interface.TransactionsContractInterface().SetApproverTransactionStatus(__interface.GetTransactionContractAuth(), fundid, __transactionContract.TransactionContractStatusTransaction{
+		Status:    "Signed",
+		Username:  username,
+		Timestamp: time.Now().String(),
+	}) // conn call the balance function of deployed smart contract
+	if err != nil {
+		panic(err)
+	}
+}
+
+func GetLastStatus(fundid string) string {
+	fmt.Println("Fund ID : ", fundid)
+	reply, err := __interface.TransactionsContractInterface().GetLatestApproverTransactionStatus(&bind.CallOpts{}, fundid) // conn call the balance function of deployed smart contract
+	// conn call the balance function of deployed smart contract
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Reply : ", reply)
+	return reply.Status
+}
+
+func GetAllStatus(fundid string) []__transactionContract.TransactionContractStatusTransaction {
+	reply, err := __interface.TransactionsContractInterface().GetApproverTransactionStatus(&bind.CallOpts{}, fundid) // conn call the balance function of deployed smart contract
+	// conn call the balance function of deployed smart contract
+	if err != nil {
+		panic(err)
+	}
+
+	return reply
+}
+
 func InsertFunder(funder *__model.Funder) {
 	db, errDB := sql.Open("sqlite3", "./funder_db.db")
 	if errDB != nil {
 		panic(errDB)
 	}
-
-	fmt.Println("Fundid Funder : ", funder.FundId)
 
 	records := `INSERT INTO funder(FundId, Nik, SubmittedBy, SubmittedTimestamp,FundedBy, FundedTimestamp,  FishType, NumberOfPonds, AmountOfFund) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
 	query, err := db.Prepare(records)
@@ -100,6 +164,7 @@ func GetFundersBySales(username string) []__model.Funder {
 		}
 
 		if scanner.SubmittedBy == username {
+			scanner.Status = GetLastStatus(scanner.FundId)
 			funders = append(funders, scanner)
 		}
 
@@ -145,6 +210,77 @@ func GetFunders() []__model.Funder {
 	return funders
 }
 
+func GetFundersByAnalyst(username string) []__model.Funder {
+	db, errDB := sql.Open("sqlite3", "./funder_db.db")
+	if errDB != nil {
+		panic(errDB)
+	}
+
+	rows, err := db.Query("SELECT FundId,Nik,FishType,NumberOfPonds,AmountOfFund, ProposedBy FROM funder")
+	if err != nil {
+		panic(err)
+	}
+
+	var scanner __model.Funder
+
+	var funders []__model.Funder
+
+	for rows.Next() {
+		err = rows.Scan(&scanner.FundId, &scanner.Nik, &scanner.FishType, &scanner.NumberOfPonds, &scanner.AmountOfFund, &scanner.ProposedBy)
+
+		if err != nil {
+			panic(err)
+		}
+
+		if scanner.ProposedBy == username {
+			scanner.Status = GetLastStatus(scanner.FundId)
+			funders = append(funders, scanner)
+		}
+
+	}
+
+	defer rows.Close()
+
+	defer db.Close()
+
+	return funders
+}
+
+func GetFundersByApproveFunder(username string) []__model.Funder {
+	db, errDB := sql.Open("sqlite3", "./funder_db.db")
+	if errDB != nil {
+		panic(errDB)
+	}
+
+	rows, err := db.Query("SELECT FundId,Nik,FishType,NumberOfPonds,AmountOfFund, FundedBy FROM funder")
+	if err != nil {
+		panic(err)
+	}
+
+	var scanner __model.Funder
+
+	var funders []__model.Funder
+
+	for rows.Next() {
+		err = rows.Scan(&scanner.FundId, &scanner.Nik, &scanner.FishType, &scanner.NumberOfPonds, &scanner.AmountOfFund, &scanner.FundedBy)
+
+		if err != nil {
+			panic(err)
+		}
+
+		if scanner.FundedBy == username {
+			funders = append(funders, scanner)
+		}
+
+	}
+
+	defer rows.Close()
+
+	defer db.Close()
+
+	return funders
+}
+
 func GetFunderByFunders() []__model.Funder {
 	db, errDB := sql.Open("sqlite3", "./funder_db.db")
 	if errDB != nil {
@@ -168,6 +304,7 @@ func GetFunderByFunders() []__model.Funder {
 		}
 
 		if len(scanner.ProposedBy) != 0 {
+			scanner.Status = GetLastStatus(scanner.FundId)
 			funders = append(funders, scanner)
 		}
 
@@ -203,6 +340,7 @@ func GetFunderByNik(nik string) []__model.Funder {
 		}
 
 		if scanner.Nik == nik {
+			scanner.Status = GetLastStatus(scanner.FundId)
 			funders = append(funders, scanner)
 		}
 
@@ -221,12 +359,12 @@ func UploadFileFundId(fileurl string, fundid string, username string) {
 		panic(errDB)
 	}
 
-	stmt, errStmt := db.Prepare("update funder set FileUrl=?, ProposedBy=? where FundId=?")
+	stmt, errStmt := db.Prepare("update funder set FileUrl=?, ProposedBy=?,ProposedTimestamp=? where FundId=?")
 	if errStmt != nil {
 		panic(errStmt)
 	}
 
-	_, err := stmt.Exec(fileurl, username, fundid)
+	_, err := stmt.Exec(fileurl, username, time.Now(), fundid)
 
 	if err != nil {
 		log.Fatal(err)
@@ -235,18 +373,18 @@ func UploadFileFundId(fileurl string, fundid string, username string) {
 	defer db.Close()
 }
 
-func InsertFund(amountoffund int, fundid string) {
+func InsertFund(amountoffund int, fundid string, username string) {
 	db, errDB := sql.Open("sqlite3", "./funder_db.db")
 	if errDB != nil {
 		panic(errDB)
 	}
 
-	stmt, errStmt := db.Prepare("update funder set AmountOfFund=? where FundId=?")
+	stmt, errStmt := db.Prepare("update funder set AmountOfFund=?, FundedBy=?, FundedTimestamp=? where FundId=?")
 	if errStmt != nil {
 		panic(errStmt)
 	}
 
-	_, err := stmt.Exec(amountoffund, fundid)
+	_, err := stmt.Exec(amountoffund, username, time.Now(), fundid)
 
 	if err != nil {
 		log.Fatal(err)

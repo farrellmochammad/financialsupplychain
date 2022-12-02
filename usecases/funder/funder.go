@@ -125,6 +125,19 @@ func GetFundersBySales(c echo.Context) error {
 	})
 }
 
+func GetFundersByAnalyst(c echo.Context) error {
+	funders := __repository.GetFundersByAnalyst(fmt.Sprintf("%v", c.Get("username")))
+	if len(funders) == 0 {
+		return c.JSON(http.StatusNotFound, map[string]interface{}{
+			"status": "Funder not found",
+		})
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"data": funders,
+	})
+}
+
 func GetFunders(c echo.Context) error {
 
 	funders := __repository.GetFunders()
@@ -143,6 +156,37 @@ func GetFunders(c echo.Context) error {
 func GetFundersByFunder(c echo.Context) error {
 
 	funders := __repository.GetFunderByFunders()
+	if len(funders) == 0 {
+		return c.JSON(http.StatusNotFound, map[string]interface{}{
+			"status": "Funder not found",
+		})
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"data": funders,
+	})
+
+}
+
+func GetFundersByApproveFunder(c echo.Context) error {
+
+	funders := __repository.GetFundersByApproveFunder(fmt.Sprintf("%v", c.Get("username")))
+	if len(funders) == 0 {
+		return c.JSON(http.StatusNotFound, map[string]interface{}{
+			"status": "Funder not found",
+		})
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"data": funders,
+	})
+
+}
+
+func GetAllStatus(c echo.Context) error {
+
+	fundid := c.Param("fund_id")
+	funders := __repository.GetAllStatus(fundid)
 	if len(funders) == 0 {
 		return c.JSON(http.StatusNotFound, map[string]interface{}{
 			"status": "Funder not found",
@@ -200,7 +244,8 @@ func InsertFunder(c echo.Context) error {
 		})
 	}
 
-	__repository.InsertFund(insertfund.AmountOfFund, insertfund.FundId)
+	__repository.InsertFund(insertfund.AmountOfFund, insertfund.FundId, fmt.Sprintf("%v", c.Get("username")))
+	__repository.InsertApproveFundStatusFundingBlockchain(insertfund.FundId, fmt.Sprintf("%v", c.Get("username")))
 
 	return c.JSON(http.StatusAccepted, map[string]interface{}{
 		"status": "success",
