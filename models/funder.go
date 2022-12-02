@@ -5,6 +5,8 @@ type Funder struct {
 	Nik                string `json:"nik" form:"nik" query:"nik"`
 	SubmittedBy        string `json:"submitted_by" form:"submitted_by" query:"submitted_by"`
 	SubmittedTimestamp string `json:"submitted_timestamp" form:"submitted_timestamp" query:"submitted_timestamp"`
+	ProposedBy         string `json:"proposed_by" form:"proposed_by" query:"proposed_by"`
+	ProposedTimestamp  string `json:"propsoed_timestamp" form:"propsoed_timestamp" query:"propsoed_timestamp"`
 	FundedBy           string `json:"funded_by" form:"funded_by" query:"funded_by"`
 	FundedTimestamp    string `json:"funded_timestamp" form:"funded_timestamp" query:"funded_timestamp"`
 	FileUrl            string `json:"file_url" form:"file_url" query:"file_url"`

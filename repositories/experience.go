@@ -162,13 +162,13 @@ func InsertExperience(experience *__models.Experience) {
 		panic(errDB)
 	}
 
-	records := `INSERT INTO experience(Nik, Name, Phone, SubmitBy, Dob, Address, StartFarming, FishType, NumberOfPonds, Notes, CurrentStatus) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+	records := `INSERT INTO experience(Nik, Name, Phone, SubmitBy, ProposedBy,ApprovedBy,  Dob, Address, StartFarming, FishType, NumberOfPonds, Notes, CurrentStatus) VALUES (?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 	query, err := db.Prepare(records)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	_, err = query.Exec(experience.Nik, experience.Name, experience.Phone, experience.SubmitBy, experience.Dob, experience.Address, experience.StartFarming, experience.FishType, experience.NumberOfPonds, experience.Notes, "Approved")
+	_, err = query.Exec(experience.Nik, experience.Name, experience.Phone, experience.SubmitBy, "", "", experience.Dob, experience.Address, experience.StartFarming, experience.FishType, experience.NumberOfPonds, experience.Notes, "Approved")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -219,6 +219,76 @@ func GetExperiencesByUsername(username string) []__models.Experience {
 		}
 
 		if scanner.SubmitBy == username {
+			experiences = append(experiences, scanner)
+		}
+
+	}
+
+	defer rows.Close()
+
+	defer db.Close()
+
+	return experiences
+}
+
+func GetExperiencesByAnalystUsername(username string) []__models.Experience {
+	db, errDB := sql.Open("sqlite3", "./experience_db.db")
+	if errDB != nil {
+		panic(errDB)
+	}
+
+	rows, err := db.Query("SELECT Nik,Name,Phone,Dob,SubmitBy,ProposeBy, Address,StartFarming,FishType,NumberOfPonds,Notes,CurrentStatus FROM experience")
+	if err != nil {
+		panic(err)
+	}
+
+	var scanner __models.Experience
+
+	var experiences []__models.Experience
+
+	for rows.Next() {
+		err = rows.Scan(&scanner.Nik, &scanner.Name, &scanner.Phone, &scanner.Dob, &scanner.SubmitBy, &scanner.ProposeBy, &scanner.Address, &scanner.StartFarming, &scanner.FishType, &scanner.NumberOfPonds, &scanner.Notes, &scanner.CurrentStatus)
+
+		if err != nil {
+			panic(err)
+		}
+
+		if scanner.ProposeBy == username {
+			experiences = append(experiences, scanner)
+		}
+
+	}
+
+	defer rows.Close()
+
+	defer db.Close()
+
+	return experiences
+}
+
+func GetExperiencesByFunderUsername(username string) []__models.Experience {
+	db, errDB := sql.Open("sqlite3", "./experience_db.db")
+	if errDB != nil {
+		panic(errDB)
+	}
+
+	rows, err := db.Query("SELECT Nik,Name,Phone,Dob,SubmitBy,ProposedBy, Address,StartFarming,FishType,NumberOfPonds,Notes,CurrentStatus FROM experience")
+	if err != nil {
+		panic(err)
+	}
+
+	var scanner __models.Experience
+
+	var experiences []__models.Experience
+
+	for rows.Next() {
+		err = rows.Scan(&scanner.Nik, &scanner.Name, &scanner.Phone, &scanner.Dob, &scanner.SubmitBy, &scanner.ProposeBy, &scanner.Address, &scanner.StartFarming, &scanner.FishType, &scanner.NumberOfPonds, &scanner.Notes, &scanner.CurrentStatus)
+
+		if err != nil {
+			panic(err)
+		}
+
+		if len(scanner.ProposeBy) != 0 {
 			experiences = append(experiences, scanner)
 		}
 

@@ -140,6 +140,21 @@ func GetFunders(c echo.Context) error {
 
 }
 
+func GetFundersByFunder(c echo.Context) error {
+
+	funders := __repository.GetFunderByFunders()
+	if len(funders) == 0 {
+		return c.JSON(http.StatusNotFound, map[string]interface{}{
+			"status": "Funder not found",
+		})
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"data": funders,
+	})
+
+}
+
 func GetFunderByNik(c echo.Context) error {
 
 	nik := c.Param("nik")
@@ -167,7 +182,7 @@ func UploadFileFunder(c echo.Context) error {
 		})
 	}
 
-	__repository.UploadFileFundId(uploadfileurl.FileUrl, uploadfileurl.FundId)
+	__repository.UploadFileFundId(uploadfileurl.FileUrl, uploadfileurl.FundId, fmt.Sprintf("%v", c.Get("username")))
 
 	return c.JSON(http.StatusAccepted, map[string]interface{}{
 		"status": "success",

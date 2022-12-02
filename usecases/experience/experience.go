@@ -111,6 +111,36 @@ func GetExperienceSales(c echo.Context) error {
 	})
 }
 
+func GetExperienceAnalyst(c echo.Context) error {
+
+	experiences := __repository.GetExperiencesByAnalystUsername(fmt.Sprintf("%v", c.Get("username")))
+
+	if len(experiences) == 0 {
+		return c.JSON(http.StatusAccepted, map[string]interface{}{
+			"status": "Tidak ada data experience",
+		})
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"data": experiences,
+	})
+}
+
+func GetExperienceFunder(c echo.Context) error {
+
+	experiences := __repository.GetExperiencesByFunderUsername(fmt.Sprintf("%v", c.Get("username")))
+
+	if len(experiences) == 0 {
+		return c.JSON(http.StatusAccepted, map[string]interface{}{
+			"status": "Tidak ada data experience",
+		})
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"data": experiences,
+	})
+}
+
 func GetExperiencesSalesBlockchain(c echo.Context) error {
 
 	fundid := c.Param("fund_id")

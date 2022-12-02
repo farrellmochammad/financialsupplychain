@@ -5,6 +5,8 @@ type Experience struct {
 	Name          string `json:"name" form:"name" query:"name"`
 	Phone         string `json:"phone" form:"phone" query:"phone"`
 	SubmitBy      string `json:"submit_by" form:"submit_by" query:"submit_by"`
+	ProposeBy     string `json:"proposed_by" form:"proposed_by" query:"proposed_by"`
+	ApprovedBy    string `json:"approved_by" form:"approved_by" query:"approved_by"`
 	Dob           string `json:"dob" form:"dob" query:"dob"`
 	Address       string `json:"address" form:"address" query:"address"`
 	StartFarming  string `json:"start_farming" form:"start_farming" query:"start_farming"`

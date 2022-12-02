@@ -38,6 +38,8 @@ func main() {
 	e.PUT("/experience", __middleware.ValidateJWT(__ExperienceUsecase.UpdateExperience))
 	e.GET("/experiences", __middleware.ValidateJWT(__ExperienceUsecase.GetExperiences))
 	e.GET("/experiences_sales", __middleware.ValidateJWT(__ExperienceUsecase.GetExperienceSales))
+	e.GET("/experiences_analyst", __middleware.ValidateJWT(__ExperienceUsecase.GetExperienceAnalyst))
+	e.GET("/experiences_funder", __middleware.ValidateJWT(__ExperienceUsecase.GetExperienceFunder))
 	e.GET("/experiences_sales/:fund_id", __middleware.ValidateJWT(__ExperienceUsecase.GetExperiencesSalesBlockchain))
 	e.GET("/experience_fund/:fund_id", __middleware.ValidateJWT(__ExperienceUsecase.GetExperienceByFundId))
 	e.GET("/experience_nik/:nik", __middleware.ValidateJWT(__ExperienceUsecase.GetExperienceByNik))
@@ -45,6 +47,7 @@ func main() {
 
 	e.GET("/funders", __middleware.ValidateJWT(__FunderUsecase.GetFunders))
 	e.GET("/funders_sales", __middleware.ValidateJWT(__FunderUsecase.GetFundersBySales))
+	e.GET("/funders_funder", __middleware.ValidateJWT(__FunderUsecase.GetFundersByFunder))
 	e.GET("/funder/:nik", __middleware.ValidateJWT(__FunderUsecase.GetFunderBlockChain))
 	e.GET("/funder_nik/:nik", __middleware.ValidateJWT(__FunderUsecase.GetFunderByNik))
 	e.PUT("/uploadfilefunder", __middleware.ValidateJWT(__FunderUsecase.UploadFileFunder))

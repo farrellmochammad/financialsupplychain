@@ -5,6 +5,7 @@ import (
 	__transactionContract "financingsupplychain/api/transactioncontract"
 	__interface "financingsupplychain/interfaces"
 	__model "financingsupplychain/models"
+	"fmt"
 	"log"
 
 	"math/big"
@@ -59,6 +60,8 @@ func InsertFunder(funder *__model.Funder) {
 	if errDB != nil {
 		panic(errDB)
 	}
+
+	fmt.Println("Fundid Funder : ", funder.FundId)
 
 	records := `INSERT INTO funder(FundId, Nik, SubmittedBy, SubmittedTimestamp,FundedBy, FundedTimestamp,  FishType, NumberOfPonds, AmountOfFund) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
 	query, err := db.Prepare(records)
@@ -142,6 +145,41 @@ func GetFunders() []__model.Funder {
 	return funders
 }
 
+func GetFunderByFunders() []__model.Funder {
+	db, errDB := sql.Open("sqlite3", "./funder_db.db")
+	if errDB != nil {
+		panic(errDB)
+	}
+
+	rows, err := db.Query("SELECT FundId,Nik,ProposedBy, SubmittedTimestamp, FishType,NumberOfPonds,AmountOfFund FROM funder")
+	if err != nil {
+		panic(err)
+	}
+
+	var scanner __model.Funder
+
+	var funders []__model.Funder
+
+	for rows.Next() {
+		err = rows.Scan(&scanner.FundId, &scanner.Nik, &scanner.ProposedBy, &scanner.SubmittedTimestamp, &scanner.FishType, &scanner.NumberOfPonds, &scanner.AmountOfFund)
+
+		if err != nil {
+			panic(err)
+		}
+
+		if len(scanner.ProposedBy) != 0 {
+			funders = append(funders, scanner)
+		}
+
+	}
+
+	defer rows.Close()
+
+	defer db.Close()
+
+	return funders
+}
+
 func GetFunderByNik(nik string) []__model.Funder {
 	db, errDB := sql.Open("sqlite3", "./funder_db.db")
 	if errDB != nil {
@@ -177,18 +215,18 @@ func GetFunderByNik(nik string) []__model.Funder {
 	return funders
 }
 
-func UploadFileFundId(fileurl string, fundid string) {
+func UploadFileFundId(fileurl string, fundid string, username string) {
 	db, errDB := sql.Open("sqlite3", "./funder_db.db")
 	if errDB != nil {
 		panic(errDB)
 	}
 
-	stmt, errStmt := db.Prepare("update funder set FileUrl=? where FundId=?")
+	stmt, errStmt := db.Prepare("update funder set FileUrl=?, ProposedBy=? where FundId=?")
 	if errStmt != nil {
 		panic(errStmt)
 	}
 
-	_, err := stmt.Exec(fileurl, fundid)
+	_, err := stmt.Exec(fileurl, username, fundid)
 
 	if err != nil {
 		log.Fatal(err)

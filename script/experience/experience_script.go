@@ -27,6 +27,8 @@ func main() {
 		"Name" TEXT NOT NULL,
 		"Phone" TEXT NOT NULL,
 		"SubmitBy" TEXT NOT NULL,
+		"ProposeBy" TEXT NOT NULL,
+		"ApprovedBy" TEXT NOT NULL,
 		"Dob" TEXT,
 		"Address" TEXT,
 		"StartFarming" TEXT,
