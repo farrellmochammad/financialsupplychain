@@ -55,6 +55,7 @@ func main() {
 	e.GET("/funder_nik/:nik", __middleware.ValidateJWT(__FunderUsecase.GetFunderByNik))
 	e.PUT("/uploadfilefunder", __middleware.ValidateJWT(__FunderUsecase.UploadFileFunder))
 	e.PUT("/insertfunder", __middleware.ValidateJWT(__FunderUsecase.InsertFunder))
+	e.PUT("/insertfunderrejected", __middleware.ValidateJWT(__FunderUsecase.InsertRejectedFunder))
 	e.POST("/funder", __middleware.ValidateJWT(__FunderUsecase.InsertFunderBlockChain))
 	e.POST("/funder_submission", __middleware.ValidateJWT(__FunderUsecase.InsertFunderSubmission))
 

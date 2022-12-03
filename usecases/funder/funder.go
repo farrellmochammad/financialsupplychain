@@ -252,3 +252,21 @@ func InsertFunder(c echo.Context) error {
 	})
 
 }
+
+func InsertRejectedFunder(c echo.Context) error {
+
+	insertfund := &__model.InsertFund{}
+	if err := c.Bind(&insertfund); err != nil {
+		return c.JSON(http.StatusBadGateway, map[string]interface{}{
+			"message": "failed",
+			"err":     err,
+		})
+	}
+
+	__repository.InsertRejectedFundStatusFundingBlockchain(insertfund.FundId, fmt.Sprintf("%v", c.Get("username")))
+
+	return c.JSON(http.StatusAccepted, map[string]interface{}{
+		"status": "success",
+	})
+
+}
