@@ -127,13 +127,13 @@ func InsertFunder(funder *__model.Funder) {
 		panic(errDB)
 	}
 
-	records := `INSERT INTO funder(FundId, Nik, SubmittedBy, SubmittedTimestamp,FundedBy, FundedTimestamp,  FishType, NumberOfPonds, AmountOfFund) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+	records := `INSERT INTO funder(FundId, Nik, SubmittedBy, SubmittedTimestamp,ProposedBy, ProposedTimestamp, FundedBy, FundedTimestamp,  FishType, NumberOfPonds, AmountOfFund) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 	query, err := db.Prepare(records)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	_, err = query.Exec(funder.FundId, funder.Nik, funder.SubmittedBy, funder.SubmittedTimestamp, funder.FundedBy, funder.FundedTimestamp, funder.FishType, funder.NumberOfPonds, funder.AmountOfFund)
+	_, err = query.Exec(funder.FundId, funder.Nik, funder.SubmittedBy, funder.SubmittedTimestamp, funder.ProposedBy, funder.ProposedTimestamp, funder.FundedBy, funder.FundedTimestamp, funder.FishType, funder.NumberOfPonds, funder.AmountOfFund)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -165,7 +165,9 @@ func GetFundersBySales(username string) []__model.Funder {
 
 		if scanner.SubmittedBy == username {
 			scanner.Status = GetLastStatus(scanner.FundId)
-			funders = append(funders, scanner)
+			if scanner.Status != "Pending Fund" {
+				funders = append(funders, scanner)
+			}
 		}
 
 	}

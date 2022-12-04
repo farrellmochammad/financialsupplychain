@@ -113,7 +113,7 @@ func InsertFunderSubmission(c echo.Context) error {
 }
 
 func GetFundersBySales(c echo.Context) error {
-	funders := __repository.GetFunders()
+	funders := __repository.GetFundersBySales(fmt.Sprintf("%v", c.Get("username")))
 	if len(funders) == 0 {
 		return c.JSON(http.StatusNotFound, map[string]interface{}{
 			"status": "Funder not found",
