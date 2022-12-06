@@ -5,7 +5,6 @@ import (
 	__transactionContract "financingsupplychain/api/transactioncontract"
 	__interface "financingsupplychain/interfaces"
 	__model "financingsupplychain/models"
-	"fmt"
 	"log"
 
 	"math/big"
@@ -100,19 +99,27 @@ func InsertSignedFundStatusFundingBlockchain(fundid string, username string) {
 }
 
 func GetLastStatus(fundid string) string {
-	fmt.Println("Fund ID : ", fundid)
 	reply, err := __interface.TransactionsContractInterface().GetLatestApproverTransactionStatus(&bind.CallOpts{}, fundid) // conn call the balance function of deployed smart contract
 	// conn call the balance function of deployed smart contract
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println("Reply : ", reply)
 	return reply.Status
 }
 
 func GetAllStatus(fundid string) []__transactionContract.TransactionContractStatusTransaction {
 	reply, err := __interface.TransactionsContractInterface().GetApproverTransactionStatus(&bind.CallOpts{}, fundid) // conn call the balance function of deployed smart contract
+	// conn call the balance function of deployed smart contract
+	if err != nil {
+		panic(err)
+	}
+
+	return reply
+}
+
+func GetFunderApproverTransaction(fundid string) []__transactionContract.TransactionContractFunderApproverTransaction {
+	reply, err := __interface.TransactionsContractInterface().GetFunderApproverTransaction(&bind.CallOpts{}, fundid) // conn call the balance function of deployed smart contract
 	// conn call the balance function of deployed smart contract
 	if err != nil {
 		panic(err)

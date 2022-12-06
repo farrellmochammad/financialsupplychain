@@ -270,3 +270,18 @@ func InsertRejectedFunder(c echo.Context) error {
 	})
 
 }
+
+func GetTracingHistories(c echo.Context) error {
+	fundid := c.Param("fund_id")
+
+	monitorings := __repository.GetMonitoringBlockChain(fundid)
+
+	approvertransactions := __repository.GetAllStatus(fundid)
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"data": map[string]interface{}{
+			"monitorings":  monitorings,
+			"transactions": approvertransactions,
+		},
+	})
+}
