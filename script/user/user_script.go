@@ -38,9 +38,29 @@ func main() {
 		log.Fatal(err)
 	}
 
-	res, err := query.Exec("astaxie", "研发部门", "2012-12-09")
+	resC, errC := query.Exec("sales@gmail.com", "123456", "sales")
 
-	fmt.Println(res.LastInsertId())
+	if errC != nil {
+		log.Fatal(errC)
+	}
+
+	fmt.Println(resC.LastInsertId())
+
+	resA, errA := query.Exec("analyst@gmail.com", "123456", "analyst")
+
+	if errA != nil {
+		log.Fatal(errC)
+	}
+
+	fmt.Println(resA.LastInsertId())
+
+	resB, errB := query.Exec("funder@gmail.com", "123456", "funder")
+
+	if errB != nil {
+		log.Fatal(errC)
+	}
+
+	fmt.Println(resB.LastInsertId())
 
 	db.Close()
 	fmt.Println("Table created successfully!")

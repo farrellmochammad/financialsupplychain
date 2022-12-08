@@ -30,6 +30,12 @@ var connCredit *__creditscoreContract.Api
 var connTransaction *__transactionsContract.Api
 var creditContractAuth *bind.TransactOpts
 var transactionContractAuth *bind.TransactOpts
+
+const creditKey = "d90636a5a7961f380e91a0f001d0bab43a252b809e2491075c6c7a3140554e94"
+const transactionKey = "06adc980a667275e656f1419ecb455624c5d50a0b8feef5feda5e93d4f3b6651"
+const creditKeyValue = "767c9BdAD2604F48996Ef9ADFe090DF1942D3e9A"
+const transactionKeyValue = "C1F0480Fda79336eD8C4F08b8beCd36A5F9Ed4bB"
+
 var err error
 
 func DeployTransaction() *single {
@@ -39,13 +45,13 @@ func DeployTransaction() *single {
 		if singleInstance == nil {
 			fmt.Println("Init start connection that clean data")
 			singleInstance = &single{}
-			client, err = ethclient.Dial("http://172.27.224.1:7545")
+			client, err = ethclient.Dial("http://127.0.0.1:8545")
 			if err != nil {
 				panic(err)
 			}
 
 			// create auth and transaction package for deploying smart contract
-			creditContractAuth = getAccountAuth(client, "e7085bed4fc19d2729d839f259b06c02a203f686e2c8044aaa77104f20ecb58b")
+			creditContractAuth = getAccountAuth(client, creditKey)
 
 			//deploying smart contract
 			deployedCreditContract, _, _, err = __creditscoreContract.DeployApi(creditContractAuth, client) //api is redirected from api directory from our contract go file
@@ -61,7 +67,7 @@ func DeployTransaction() *single {
 			}
 
 			// create auth and transaction package for deploying smart contract
-			transactionContractAuth = getAccountAuth(client, "71723c973dfa7e0e73443705fe3c5cde3e53ee1e889c437ad4a06ab9b78031dc")
+			transactionContractAuth = getAccountAuth(client, transactionKey)
 
 			//deploying smart contract
 			deployedTransactionContract, _, _, err = __transactionsContract.DeployApi(transactionContractAuth, client) //api is redirected from api directory from our contract go file
@@ -87,12 +93,12 @@ func InitConnectionTransaction() *single {
 		lock.Lock()
 		defer lock.Unlock()
 		if singleInstanceTransaction == nil {
-			client, err = ethclient.Dial("http://172.27.224.1:7545")
+			client, err = ethclient.Dial("http://127.0.0.1:8545")
 			if err != nil {
 				panic(err)
 			}
 
-			hexaddress := "0x1fA637003ddC602e7d662351d9b1d4C4a5cc748B"
+			hexaddress := transactionKeyValue
 			// create connection object to connect through are binary go file and deployed contract with help of address
 			connTransaction, err = __transactionsContract.NewApi(common.HexToAddress(hexaddress), client)
 			if err != nil {
@@ -108,13 +114,13 @@ func InitConnectionCreditScore() *single {
 		lock.Lock()
 		defer lock.Unlock()
 		if singleInstanceCreditScore == nil {
-			client, err = ethclient.Dial("http://172.27.224.1:7545")
+			client, err = ethclient.Dial("http://127.0.0.1:8545")
 			if err != nil {
 				panic(err)
 			}
 
 			// create connection object to connect through are binary go file and deployed contract with help of address
-			hexaddress := "0xe8582354606F11c58146808Fb53073b1c4564b69"
+			hexaddress := creditKeyValue
 			connCredit, err = __creditscoreContract.NewApi(common.HexToAddress(hexaddress), client)
 			if err != nil {
 				panic(err)
@@ -138,12 +144,12 @@ func TransactionsContractInterface() *__transactionsContract.Api {
 
 func GetCreditContractAuth() *bind.TransactOpts {
 
-	return getAccountAuth(client, "e7085bed4fc19d2729d839f259b06c02a203f686e2c8044aaa77104f20ecb58b")
+	return getAccountAuth(client, creditKey)
 }
 
 func GetTransactionContractAuth() *bind.TransactOpts {
 
-	return getAccountAuth(client, "71723c973dfa7e0e73443705fe3c5cde3e53ee1e889c437ad4a06ab9b78031dc")
+	return getAccountAuth(client, transactionKey)
 }
 
 func getAccountAuth(client *ethclient.Client, accountAddress string) *bind.TransactOpts {
