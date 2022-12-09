@@ -1,7 +1,8 @@
 package main
 
 import (
-	// __interface "financingsupplychain/interfaces"
+	__interface "financingsupplychain/interfaces"
+	"os"
 
 	__authUsecase "financingsupplychain/usecases/auth"
 	__CreditUsecase "financingsupplychain/usecases/credit"
@@ -21,7 +22,13 @@ import (
 
 func main() {
 
-	// __interface.DeployTransaction()
+	argsWithoutProg := os.Args[1:]
+
+	if len(argsWithoutProg) != 0 {
+		if argsWithoutProg[0] == "-new" {
+			__interface.DeployTransaction()
+		}
+	}
 
 	e := echo.New()
 

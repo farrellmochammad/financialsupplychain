@@ -3,10 +3,13 @@ package interfaces
 import (
 	"context"
 	"crypto/ecdsa"
+	"encoding/json"
 	__creditscoreContract "financingsupplychain/api/creditscorecontract"
 	__transactionsContract "financingsupplychain/api/transactioncontract"
 	"fmt"
+	"io/ioutil"
 	"math/big"
+	"os"
 	"sync"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -31,10 +34,11 @@ var connTransaction *__transactionsContract.Api
 var creditContractAuth *bind.TransactOpts
 var transactionContractAuth *bind.TransactOpts
 
-const creditKey = "d90636a5a7961f380e91a0f001d0bab43a252b809e2491075c6c7a3140554e94"
-const transactionKey = "06adc980a667275e656f1419ecb455624c5d50a0b8feef5feda5e93d4f3b6651"
-const creditKeyValue = "767c9BdAD2604F48996Ef9ADFe090DF1942D3e9A"
-const transactionKeyValue = "C1F0480Fda79336eD8C4F08b8beCd36A5F9Ed4bB"
+const creditKey = "4b4e8a50a40e598d04eaffc150a497f0270455f010333207435e6c378de3db12"
+const transactionKey = "7a9a447ac9c069b1adc85b1b7ad0a23b2e40a326e866371412504d81c7266ad5"
+const creditKeyValue = "0x00BDC6f576d1A6DA38De317B6aF01E593F2aA526"
+const transactionKeyValue = "0x266afe21fD9f1C4Ce18166B469ec93D64482d566"
+const ganacheIp = "http://172.27.224.1:7545"
 
 var err error
 
@@ -45,7 +49,7 @@ func DeployTransaction() *single {
 		if singleInstance == nil {
 			fmt.Println("Init start connection that clean data")
 			singleInstance = &single{}
-			client, err = ethclient.Dial("http://127.0.0.1:8545")
+			client, err = ethclient.Dial(ganacheIp)
 			if err != nil {
 				panic(err)
 			}
@@ -83,6 +87,13 @@ func DeployTransaction() *single {
 				panic(err)
 			}
 
+			data := Environment{
+				CreditKey:      deployedCreditContract.Hex(),
+				TransactionKey: deployedTransactionContract.Hex(),
+			}
+
+			writeToJSON(data)
+
 		}
 	}
 	return singleInstance
@@ -93,12 +104,12 @@ func InitConnectionTransaction() *single {
 		lock.Lock()
 		defer lock.Unlock()
 		if singleInstanceTransaction == nil {
-			client, err = ethclient.Dial("http://127.0.0.1:8545")
+			client, err = ethclient.Dial(ganacheIp)
 			if err != nil {
 				panic(err)
 			}
 
-			hexaddress := transactionKeyValue
+			hexaddress := readTransactionKey()
 			// create connection object to connect through are binary go file and deployed contract with help of address
 			connTransaction, err = __transactionsContract.NewApi(common.HexToAddress(hexaddress), client)
 			if err != nil {
@@ -114,13 +125,13 @@ func InitConnectionCreditScore() *single {
 		lock.Lock()
 		defer lock.Unlock()
 		if singleInstanceCreditScore == nil {
-			client, err = ethclient.Dial("http://127.0.0.1:8545")
+			client, err = ethclient.Dial(ganacheIp)
 			if err != nil {
 				panic(err)
 			}
 
 			// create connection object to connect through are binary go file and deployed contract with help of address
-			hexaddress := creditKeyValue
+			hexaddress := readCreditKey()
 			connCredit, err = __creditscoreContract.NewApi(common.HexToAddress(hexaddress), client)
 			if err != nil {
 				panic(err)
@@ -188,4 +199,53 @@ func getAccountAuth(client *ethclient.Client, accountAddress string) *bind.Trans
 	auth.GasPrice = big.NewInt(1000000)
 
 	return auth
+}
+
+func writeToJSON(env Environment) {
+	file, _ := json.MarshalIndent(env, "", " ")
+
+	_ = ioutil.WriteFile("env.json", file, 0644)
+}
+
+func readCreditKey() string {
+	// Open our jsonFile
+	jsonFile, err := os.Open("env.json")
+	// if we os.Open returns an error then handle it
+	if err != nil {
+		fmt.Println(err)
+	}
+	// defer the closing of our jsonFile so that we can parse it later on
+	defer jsonFile.Close()
+
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+
+	var result map[string]interface{}
+	json.Unmarshal([]byte(byteValue), &result)
+
+	return fmt.Sprintf("%v", result["CreditKey"])
+
+}
+
+func readTransactionKey() string {
+	// Open our jsonFile
+	jsonFile, err := os.Open("env.json")
+	// if we os.Open returns an error then handle it
+	if err != nil {
+		fmt.Println(err)
+	}
+	// defer the closing of our jsonFile so that we can parse it later on
+	defer jsonFile.Close()
+
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+
+	var result map[string]interface{}
+	json.Unmarshal([]byte(byteValue), &result)
+
+	return fmt.Sprintf("%v", result["TransactionKey"])
+
+}
+
+type Environment struct {
+	CreditKey      string
+	TransactionKey string
 }
