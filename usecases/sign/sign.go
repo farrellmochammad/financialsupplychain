@@ -20,6 +20,7 @@ func InsertSigned(c echo.Context) error {
 	}
 
 	__repository.InsertSigned(sign)
+	__repository.InsertSignedFundStatusFundingBlockchain(sign.FundId, fmt.Sprintf("%v", c.Get("username")))
 
 	return c.JSON(http.StatusAccepted, map[string]interface{}{
 		"status": "Insert sign Success",
