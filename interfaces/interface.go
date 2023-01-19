@@ -34,12 +34,6 @@ var connTransaction *__transactionsContract.Api
 var creditContractAuth *bind.TransactOpts
 var transactionContractAuth *bind.TransactOpts
 
-const creditKey = "4b4e8a50a40e598d04eaffc150a497f0270455f010333207435e6c378de3db12"
-const transactionKey = "7a9a447ac9c069b1adc85b1b7ad0a23b2e40a326e866371412504d81c7266ad5"
-const creditKeyValue = "0x00BDC6f576d1A6DA38De317B6aF01E593F2aA526"
-const transactionKeyValue = "0x266afe21fD9f1C4Ce18166B469ec93D64482d566"
-const ganacheIp = "http://172.27.224.1:7545"
-
 var err error
 
 func DeployTransaction() *single {
@@ -49,13 +43,15 @@ func DeployTransaction() *single {
 		if singleInstance == nil {
 			fmt.Println("Init start connection that clean data")
 			singleInstance = &single{}
-			client, err = ethclient.Dial(ganacheIp)
+			GanacheIp := readGanacheIp()
+			client, err = ethclient.Dial(GanacheIp)
 			if err != nil {
 				panic(err)
 			}
 
+			CreditKey := readCreditPrivateKey()
 			// create auth and transaction package for deploying smart contract
-			creditContractAuth = getAccountAuth(client, creditKey)
+			creditContractAuth = getAccountAuth(client, CreditKey)
 
 			//deploying smart contract
 			deployedCreditContract, _, _, err = __creditscoreContract.DeployApi(creditContractAuth, client) //api is redirected from api directory from our contract go file
@@ -70,8 +66,9 @@ func DeployTransaction() *single {
 				panic(err)
 			}
 
+			TransactionKey := readTransactionPrivateKey()
 			// create auth and transaction package for deploying smart contract
-			transactionContractAuth = getAccountAuth(client, transactionKey)
+			transactionContractAuth = getAccountAuth(client, TransactionKey)
 
 			//deploying smart contract
 			deployedTransactionContract, _, _, err = __transactionsContract.DeployApi(transactionContractAuth, client) //api is redirected from api directory from our contract go file
@@ -88,8 +85,11 @@ func DeployTransaction() *single {
 			}
 
 			data := Environment{
-				CreditKey:      deployedCreditContract.Hex(),
-				TransactionKey: deployedTransactionContract.Hex(),
+				GanacheHost:           GanacheIp,
+				CreditPrivateKey:      CreditKey,
+				TransactionPrivateKey: TransactionKey,
+				CreditKey:             deployedCreditContract.Hex(),
+				TransactionKey:        deployedTransactionContract.Hex(),
 			}
 
 			writeToJSON(data)
@@ -104,7 +104,7 @@ func InitConnectionTransaction() *single {
 		lock.Lock()
 		defer lock.Unlock()
 		if singleInstanceTransaction == nil {
-			client, err = ethclient.Dial(ganacheIp)
+			client, err = ethclient.Dial(readGanacheIp())
 			if err != nil {
 				panic(err)
 			}
@@ -125,7 +125,7 @@ func InitConnectionCreditScore() *single {
 		lock.Lock()
 		defer lock.Unlock()
 		if singleInstanceCreditScore == nil {
-			client, err = ethclient.Dial(ganacheIp)
+			client, err = ethclient.Dial(readGanacheIp())
 			if err != nil {
 				panic(err)
 			}
@@ -155,12 +155,12 @@ func TransactionsContractInterface() *__transactionsContract.Api {
 
 func GetCreditContractAuth() *bind.TransactOpts {
 
-	return getAccountAuth(client, creditKey)
+	return getAccountAuth(client, readCreditPrivateKey())
 }
 
 func GetTransactionContractAuth() *bind.TransactOpts {
 
-	return getAccountAuth(client, transactionKey)
+	return getAccountAuth(client, readTransactionPrivateKey())
 }
 
 func getAccountAuth(client *ethclient.Client, accountAddress string) *bind.TransactOpts {
@@ -226,6 +226,25 @@ func readCreditKey() string {
 
 }
 
+func readGanacheIp() string {
+	// Open our jsonFile
+	jsonFile, err := os.Open("env.json")
+	// if we os.Open returns an error then handle it
+	if err != nil {
+		fmt.Println(err)
+	}
+	// defer the closing of our jsonFile so that we can parse it later on
+	defer jsonFile.Close()
+
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+
+	var result map[string]interface{}
+	json.Unmarshal([]byte(byteValue), &result)
+
+	return fmt.Sprintf("%v", result["GanacheHost"])
+
+}
+
 func readTransactionKey() string {
 	// Open our jsonFile
 	jsonFile, err := os.Open("env.json")
@@ -242,10 +261,48 @@ func readTransactionKey() string {
 	json.Unmarshal([]byte(byteValue), &result)
 
 	return fmt.Sprintf("%v", result["TransactionKey"])
+}
 
+func readCreditPrivateKey() string {
+	// Open our jsonFile
+	jsonFile, err := os.Open("env.json")
+	// if we os.Open returns an error then handle it
+	if err != nil {
+		fmt.Println(err)
+	}
+	// defer the closing of our jsonFile so that we can parse it later on
+	defer jsonFile.Close()
+
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+
+	var result map[string]interface{}
+	json.Unmarshal([]byte(byteValue), &result)
+
+	return fmt.Sprintf("%v", result["CreditPrivateKey"])
+}
+
+func readTransactionPrivateKey() string {
+	// Open our jsonFile
+	jsonFile, err := os.Open("env.json")
+	// if we os.Open returns an error then handle it
+	if err != nil {
+		fmt.Println(err)
+	}
+	// defer the closing of our jsonFile so that we can parse it later on
+	defer jsonFile.Close()
+
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+
+	var result map[string]interface{}
+	json.Unmarshal([]byte(byteValue), &result)
+
+	return fmt.Sprintf("%v", result["TransactionPrivateKey"])
 }
 
 type Environment struct {
-	CreditKey      string
-	TransactionKey string
+	GanacheHost           string
+	CreditPrivateKey      string
+	TransactionPrivateKey string
+	CreditKey             string
+	TransactionKey        string
 }
